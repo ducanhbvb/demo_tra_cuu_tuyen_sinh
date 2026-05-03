@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4F6D9E52-1A2B-4C3D-8E4F-5A6B7C8D9E0F}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>
+    </RootNamespace>
+    <AssemblyName>TraCuuTuyenSinh</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>latest</LangVersion>
+    <Use32BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Properties -->
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- Global -->
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <!-- AppCode - Helpers -->
+    <Compile Include="AppCode\Helpers\DBHelper.cs" />
+    <Compile Include="AppCode\Helpers\SecurityHelper.cs" />
+    <Compile Include="AppCode\Helpers\EmailHelper.cs" />
+    <Compile Include="AppCode\Helpers\SlugHelper.cs" />
+    <Compile Include="AppCode\Helpers\ImageUploadHelper.cs" />
+    <Compile Include="AppCode\Helpers\LogHelper.cs" />
+    <!-- AppCode - Models -->
+    <Compile Include="AppCode\Models\TaiKhoanModel.cs" />
+    <Compile Include="AppCode\Models\TruongModel.cs" />
+    <Compile Include="AppCode\Models\TinTuyenSinhModel.cs" />
+    <Compile Include="AppCode\Models\DiemChuanLichSuModel.cs" />
+    <Compile Include="AppCode\Models\ProfileHocSinhModel.cs" />
+    <Compile Include="AppCode\Models\WishListModel.cs" />
+    <Compile Include="AppCode\Models\TuVanModel.cs" />
+    <Compile Include="AppCode\Models\DanhGiaModel.cs" />
+    <Compile Include="AppCode\Models\BaiVietModel.cs" />
+    <Compile Include="AppCode\Models\LookupModel.cs" />
+    <Compile Include="AppCode\Models\PagedResult.cs" />
+    <!-- AppCode - DAL -->
+    <Compile Include="AppCode\DAL\TaiKhoanDAL.cs" />
+    <Compile Include="AppCode\DAL\TruongDAL.cs" />
+    <Compile Include="AppCode\DAL\TinTuyenSinhDAL.cs" />
+    <Compile Include="AppCode\DAL\DiemChuanLichSuDAL.cs" />
+    <Compile Include="AppCode\DAL\ProfileDAL.cs" />
+    <Compile Include="AppCode\DAL\WishListDAL.cs" />
+    <Compile Include="AppCode\DAL\TuVanDanhGiaDAL.cs" />
+    <Compile Include="AppCode\DAL\BaiVietDAL.cs" />
+    <Compile Include="AppCode\DAL\DanhMucDAL.cs" />
+    <Compile Include="AppCode\DAL\ThongKeDAL.cs" />
+    <Compile Include="AppCode\DAL\SoSanhDAL.cs" />
+    <Compile Include="AppCode\DAL\TimKiemTheoNganhDAL.cs" />
+    <Compile Include="AppCode\DAL\GoiYTruongDAL.cs" />
+    <!-- AppCode - BLL -->
+    <Compile Include="AppCode\BLL\TaiKhoanBLL.cs" />
+    <Compile Include="AppCode\BLL\TruongBLL.cs" />
+    <Compile Include="AppCode\BLL\TinTuyenSinhBLL.cs" />
+    <Compile Include="AppCode\BLL\ProfileBLL.cs" />
+    <!-- Client MasterPage -->
+    <Compile Include="Client\Site.Master.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Site.Master.designer.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <!-- Admin MasterPage -->
+    <Compile Include="Admin\Admin.Master.cs">
+      <DependentUpon>Admin.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Admin.Master.designer.cs">
+      <DependentUpon>Admin.Master</DependentUpon>
+    </Compile>
+    <!-- Client Pages -->
+    <Compile Include="Client\index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietTruong.aspx.cs">
+      <DependentUpon>ChiTietTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietTruong.aspx.designer.cs">
+      <DependentUpon>ChiTietTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietTinTuyenSinh.aspx.cs">
+      <DependentUpon>ChiTietTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>ChiTietTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TimKiemTruong.aspx.cs">
+      <DependentUpon>TimKiemTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TimKiemTruong.aspx.designer.cs">
+      <DependentUpon>TimKiemTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TraCuuDiemChuan.aspx.cs">
+      <DependentUpon>TraCuuDiemChuan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TraCuuDiemChuan.aspx.designer.cs">
+      <DependentUpon>TraCuuDiemChuan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\BaiViet.aspx.cs">
+      <DependentUpon>BaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\BaiViet.aspx.designer.cs">
+      <DependentUpon>BaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietBaiViet.aspx.cs">
+      <DependentUpon>ChiTietBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietBaiViet.aspx.designer.cs">
+      <DependentUpon>ChiTietBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\SoSanhTruong.aspx.cs">
+      <DependentUpon>SoSanhTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\SoSanhTruong.aspx.designer.cs">
+      <DependentUpon>SoSanhTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TimKiemTheoNganh.aspx.cs">
+      <DependentUpon>TimKiemTheoNganh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TimKiemTheoNganh.aspx.designer.cs">
+      <DependentUpon>TimKiemTheoNganh.aspx</DependentUpon>
+    </Compile>
+    <!-- Client Account Pages -->
+    <Compile Include="Client\Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\DangKy.aspx.cs">
+      <DependentUpon>DangKy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DangKy.aspx.designer.cs">
+      <DependentUpon>DangKy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\QuenMatKhau.aspx.cs">
+      <DependentUpon>QuenMatKhau.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\QuenMatKhau.aspx.designer.cs">
+      <DependentUpon>QuenMatKhau.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\DatLaiMatKhau.aspx.cs">
+      <DependentUpon>DatLaiMatKhau.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DatLaiMatKhau.aspx.designer.cs">
+      <DependentUpon>DatLaiMatKhau.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\XacNhanEmail.aspx.cs">
+      <DependentUpon>XacNhanEmail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\XacNhanEmail.aspx.designer.cs">
+      <DependentUpon>XacNhanEmail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Logout.aspx.designer.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+    </Compile>
+    <!-- Client Profile Pages -->
+    <Compile Include="Client\MyProfile.aspx.cs">
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\MyProfile.aspx.designer.cs">
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\WishList.aspx.cs">
+      <DependentUpon>WishList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\WishList.aspx.designer.cs">
+      <DependentUpon>WishList.aspx</DependentUpon>
+    </Compile>
+    <!-- Admin Pages -->
+    <Compile Include="Admin\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTruong.aspx.cs">
+      <DependentUpon>QuanLyTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTruong.aspx.designer.cs">
+      <DependentUpon>QuanLyTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\ChinhSuaTruong.aspx.cs">
+      <DependentUpon>ChinhSuaTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ChinhSuaTruong.aspx.designer.cs">
+      <DependentUpon>ChinhSuaTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTinTuyenSinh.aspx.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyGopYTuVan.aspx.cs">
+      <DependentUpon>QuanLyGopYTuVan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyGopYTuVan.aspx.designer.cs">
+      <DependentUpon>QuanLyGopYTuVan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTaiKhoan.aspx.cs">
+      <DependentUpon>QuanLyTaiKhoan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTaiKhoan.aspx.designer.cs">
+      <DependentUpon>QuanLyTaiKhoan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyBaiViet.aspx.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyBaiViet.aspx.designer.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyLogs.aspx.cs">
+      <DependentUpon>QuanLyLogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyLogs.aspx.designer.cs">
+      <DependentUpon>QuanLyLogs.aspx</DependentUpon>
+    </Compile>
+    <!-- Handlers -->
+    <Compile Include="Handlers\DiemChuanChart.ashx.cs">
+      <DependentUpon>DiemChuanChart.ashx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Global -->
+    <Content Include="docs\Database\Tracuutuyensinh.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Default.aspx" />
+    <Content Include="Global.asax" />
+    <!-- Config -->
+    <Content Include="Web.config" />
+    <Content Include="Admin\Web.config" />
+    <!-- Static assets -->
+    <Content Include="Client\Site.css" />
+    <Content Include="Admin\Admin.css" />
+    <Content Include="Content\Admin.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\site.js" />
+    <!-- Client MasterPage -->
+    <Content Include="Client\Site.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Admin MasterPage -->
+    <Content Include="Admin\Admin.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client ASPX -->
+    <Content Include="Client\index.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\Error.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TimKiemTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TraCuuDiemChuan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\BaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\SoSanhTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TimKiemTheoNganh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client Account ASPX -->
+    <Content Include="Client\Login.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\DangKy.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\QuenMatKhau.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\DatLaiMatKhau.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\XacNhanEmail.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\Logout.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client Profile ASPX -->
+    <Content Include="Client\MyProfile.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\WishList.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Admin ASPX -->
+    <Content Include="Admin\Default.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\ChinhSuaTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyGopYTuVan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTaiKhoan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyLogs.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Handlers -->
+    <Content Include="Handlers\DiemChuanChart.ashx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != '' And Exists('$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' == '' And Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:63601/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

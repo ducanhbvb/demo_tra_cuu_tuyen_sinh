@@ -1,0 +1,7 @@
+admin :   
+admin@tracuutuyensinh.vn\
+Admin@123
+
+user : 
+test@test1.com	
+test@123
