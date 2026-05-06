@@ -73,6 +73,7 @@
         <asp:BoundField DataField="TenChuyenNganh" HeaderText="Ngành học" />
         <asp:BoundField DataField="TenCapBac"      HeaderText="Cấp bậc" />
         <asp:BoundField DataField="TenPhuongThuc"  HeaderText="Phương thức xét tuyển" />
+        <asp:BoundField DataField="TenPhuongThuc1"  HeaderText="Phương thức xét tuyển" />
         <asp:TemplateField HeaderText="Năm">
             <ItemTemplate><span class="badge bg-secondary"><%# Eval("NamTuyenSinh") %></span></ItemTemplate>
         </asp:TemplateField>

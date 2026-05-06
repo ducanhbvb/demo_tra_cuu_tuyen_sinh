@@ -315,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Global -->
+    <Content Include="Database\Tracuutuyensinh_sql2014.sql" />
     <Content Include="docs\Database\Tracuutuyensinh.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
