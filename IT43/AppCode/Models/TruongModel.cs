@@ -9,6 +9,7 @@ public class TruongModel
     public string   TinhThanh          { get; set; }
     public byte?    MaVung             { get; set; }   // 1=Bắc, 2=Trung, 3=Nam
     public byte?    LoaiTruong         { get; set; }   // 1=Công lập, 2=Tư thục, 3=Quốc tế
+    public byte?    CapBacDaoTao       { get; set; }   // 1=Đại học, 2=Cao Đẳng, 3=Trường nghề
     public string   SoDienThoai        { get; set; }
     public string   Website            { get; set; }
     public string   AnhDaiDien         { get; set; }
@@ -29,6 +30,10 @@ public class TruongModel
     public string TenLoaiTruong => LoaiTruong switch
     {
         1 => "Công lập", 2 => "Tư thục", 3 => "Quốc tế", _ => "Khác"
+    };
+    public string TenCapBacDaoTao => CapBacDaoTao switch
+    {
+        1 => "Đại học", 2 => "Cao Đẳng", 3 => "Trường nghề", _ => ""
     };
     public string TenVung => MaVung switch
     {

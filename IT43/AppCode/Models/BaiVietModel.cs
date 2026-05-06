@@ -14,4 +14,7 @@ public class BaiVietModel
     public bool     TrangThai  { get; set; }
     public int?     MaTruong   { get; set; }
     public string   TenTruong  { get; set; }
+    public string   TheLoai    { get; set; }
+    public string   TenNguoiDang { get; set; }
+    public string   TenNguoiDangHienThi { get; set; }
 }

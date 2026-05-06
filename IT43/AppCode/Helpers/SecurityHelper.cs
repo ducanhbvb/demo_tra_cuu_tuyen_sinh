@@ -109,15 +109,22 @@ public static class SecurityHelper
     }
 
     // ── FormsAuthentication ticket (gắn role vào UserData) ─────────────────
-    public static void SignIn(int maTaiKhoan, string email, string role, bool rememberMe)
+    /// <summary>
+    /// Đăng nhập — tạo FormsAuth ticket với userData = "Role|MaTruong"
+    /// VD: "Admin|0", "TruongHoc|5", "Moderator|0"
+    /// </summary>
+    public static void SignIn(int maTaiKhoan, string email, string role, bool rememberMe, int maTruong = 0)
     {
+        // userData format: "Role|MaTruong" — MaTruong=0 nếu không phải TruongHoc
+        string userData = $"{role}|{maTruong}";
+
         var ticket = new FormsAuthenticationTicket(
             version:    1,
             name:       maTaiKhoan.ToString(),
             issueDate:  DateTime.Now,
-            expiration: DateTime.Now.AddHours(rememberMe ? 720 : 1),
+            expiration: DateTime.Now.AddHours(rememberMe ? 720 : 8),
             isPersistent: rememberMe,
-            userData:   role
+            userData:   userData
         );
         var encrypted = FormsAuthentication.Encrypt(ticket);
         var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted)
@@ -127,8 +134,9 @@ public static class SecurityHelper
         };
         HttpContext.Current.Response.Cookies.Add(cookie);
 
-        // Lưu email vào Session để MasterPage đọc mà không cần query DB mỗi request
-        HttpContext.Current.Session["UserEmail"] = email;
+        // Lưu email + MaTruong vào Session để MasterPage đọc mà không cần query DB mỗi request
+        HttpContext.Current.Session["UserEmail"]  = email;
+        HttpContext.Current.Session["MaTruong"]   = maTruong;
     }
 
     public static void SignOut() => FormsAuthentication.SignOut();
@@ -142,9 +150,136 @@ public static class SecurityHelper
         return 0;
     }
 
+    /// <summary>Lấy role name từ ticket (phần trước dấu '|').</summary>
     public static string GetCurrentRole()
     {
         var ticket = (HttpContext.Current?.User?.Identity as FormsIdentity)?.Ticket;
-        return ticket?.UserData ?? "";
+        if (ticket == null) return "";
+        var parts = ticket.UserData?.Split('|');
+        return parts?.Length > 0 ? parts[0] : "";
     }
+
+    /// <summary>Lấy MaTruong từ ticket (phần sau dấu '|'). 0 nếu không phải TruongHoc.</summary>
+    public static int GetCurrentMaTruong()
+    {
+        var ticket = (HttpContext.Current?.User?.Identity as FormsIdentity)?.Ticket;
+        if (ticket == null) return 0;
+        var parts = ticket.UserData?.Split('|');
+        if (parts?.Length > 1 && int.TryParse(parts[1], out int maTruong))
+            return maTruong;
+
+        // Fallback: đọc từ Session
+        if (HttpContext.Current?.Session["MaTruong"] is int sessionMaTruong)
+            return sessionMaTruong;
+        return 0;
+    }
+
+    // ── Kiểm tra quyền hiện tại ──────────────────────────────────────────
+    /// <summary>Lấy MaQuyen từ role name hiện tại.</summary>
+    public static int GetCurrentMaQuyen()
+    {
+        return GetCurrentRole() switch
+        {
+            "Admin"      => 1,
+            "TruongHoc"  => 2,
+            "HocSinh"    => 3,
+            "Moderator"  => 4,
+            "TuVanVien"  => 5,
+            _            => 0
+        };
+    }
+
+    public static bool IsAdmin()       => GetCurrentRole() == "Admin";
+    public static bool IsTruongHoc()   => GetCurrentRole() == "TruongHoc";
+    public static bool IsHocSinh()     => GetCurrentRole() == "HocSinh";
+    public static bool IsModerator()   => GetCurrentRole() == "Moderator";
+    public static bool IsTuVanVien()   => GetCurrentRole() == "TuVanVien";
+
+    /// <summary>Có thể truy cập /Admin/ không? (Admin, Moderator, TuVanVien)</summary>
+    public static bool CanAccessAdmin()
+    {
+        var role = GetCurrentRole();
+        return role == "Admin" || role == "Moderator" || role == "TuVanVien";
+    }
+
+    /// <summary>
+    /// Kiểm tra URL redirect nội bộ an toàn.
+    /// Chỉ cho phép đường dẫn local dạng "/...", chặn URL protocol-relative "//..." và "/\\...".
+    /// </summary>
+    public static bool IsSafeLocalUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return false;
+        if (!url.StartsWith("/")) return false;
+        if (url.StartsWith("//") || url.StartsWith("/\\")) return false;
+        if (url.Contains("\r") || url.Contains("\n")) return false;
+        return true;
+    }
+
+    /// <summary>Lấy ReturnUrl an toàn hoặc null nếu không hợp lệ.</summary>
+    public static string GetSafeReturnUrl(string returnUrl)
+        => IsSafeLocalUrl(returnUrl) ? returnUrl : null;
+
+    /// <summary>Có thể CRUD nội dung (bài viết, tin TS)? (Admin, Moderator)</summary>
+    public static bool CanManageContent()
+    {
+        var role = GetCurrentRole();
+        return role == "Admin" || role == "Moderator";
+    }
+
+    /// <summary>Có thể xem nội dung (bài viết, tin TS, thông tin trường)? (Admin, Moderator, TuVanVien)</summary>
+    public static bool CanViewContent()
+    {
+        var role = GetCurrentRole();
+        return role == "Admin" || role == "Moderator" || role == "TuVanVien";
+    }
+
+    /// <summary>Có thể phản hồi góp ý/tư vấn? (Admin, Moderator, TuVanVien)</summary>
+    public static bool CanReplyTuVan()
+    {
+        var role = GetCurrentRole();
+        return role == "Admin" || role == "Moderator" || role == "TuVanVien";
+    }
+
+    /// <summary>Có toàn quyền quản trị? Chỉ Admin.</summary>
+    public static bool CanFullAdmin() => GetCurrentRole() == "Admin";
+
+    /// <summary>
+    /// Ánh xạ MaQuyen số → tên role string (dùng cho FormsAuth và redirect).
+    /// </summary>
+    public static string MaQuyenToRole(int maQuyen) => maQuyen switch
+    {
+        1 => "Admin",
+        2 => "TruongHoc",
+        3 => "HocSinh",
+        4 => "Moderator",
+        5 => "TuVanVien",
+        _ => "HocSinh"
+    };
+
+    /// <summary>
+    /// Ánh xạ role string → MaQuyen số — nghịch đảo MaQuyenToRole.
+    /// Dùng khi cần redirect ngay sau SignIn (cookie chưa khả dụng trong cùng request).
+    /// </summary>
+    public static int RoleToMaQuyen(string role) => role switch
+    {
+        "Admin"     => 1,
+        "TruongHoc" => 2,
+        "HocSinh"   => 3,
+        "Moderator" => 4,
+        "TuVanVien" => 5,
+        _           => 3
+    };
+
+    /// <summary>
+    /// Trả về URL redirect sau khi đăng nhập theo role.
+    /// </summary>
+    public static string GetRedirectUrlByRole(int maQuyen) => maQuyen switch
+    {
+        1 => "/Admin/Default.aspx",
+        2 => "/TruongHoc/Default.aspx",
+        3 => "/Client/index.aspx",
+        4 => "/Admin/Default.aspx",
+        5 => "/Admin/Default.aspx",
+        _ => "/Client/index.aspx"
+    };
 }

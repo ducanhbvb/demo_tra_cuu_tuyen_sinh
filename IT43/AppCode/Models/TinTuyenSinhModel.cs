@@ -15,7 +15,7 @@ public class TinTuyenSinhModel
     public string   TenPhuongThuc      { get; set; }
     public short    NamTuyenSinh       { get; set; }
     public int?     ChiTieu            { get; set; }
-    public decimal? HocPhi             { get; set; }
+    public string   HocPhi             { get; set; }  // Sprint 1: đổi từ decimal? → string để hỗ trợ text tự do "10-20 triệu"
     public string   ToHopMonHoc        { get; set; }
     public decimal? DiemChuanNamTruoc  { get; set; }
     public decimal? DiemChuanNamNay    { get; set; }
