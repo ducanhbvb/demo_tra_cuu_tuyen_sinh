@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -130,6 +131,66 @@ public static class ImageUploadHelper
         s = Regex.Replace(s, @"-{2,}", "-");
         s = s.Trim('-', '.');
         return string.IsNullOrEmpty(s) ? "file" : s;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Trích xuất danh sách đường dẫn ảnh LOCAL từ HTML nội dung bài viết.
+    /// Chỉ lấy ảnh nằm trong /Resources/Images/ (bỏ qua URL ngoài và base64).
+    /// </summary>
+    public static List<string> ExtractContentImagePaths(string html)
+    {
+        var list = new List<string>();
+        if (string.IsNullOrWhiteSpace(html)) return list;
+
+        // Khớp src="..." hoặc src='...'
+        var matches = Regex.Matches(html,
+            @"<img[^>]+src\s*=\s*[""']([^""']+)[""']",
+            RegexOptions.IgnoreCase);
+
+        foreach (Match m in matches)
+        {
+            string src = m.Groups[1].Value.Trim();
+            // Chỉ lấy ảnh local /Resources/Images/
+            if (!string.IsNullOrEmpty(src)
+                && src.StartsWith("/Resources/Images/", StringComparison.OrdinalIgnoreCase)
+                && !IsExternalUrl(src))
+            {
+                list.Add(src);
+            }
+        }
+        return list;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Xóa các ảnh nội dung (từ HTML) khỏi disk.
+    /// Dùng khi xóa bài hoặc cập nhật bài (xóa ảnh không còn dùng).
+    /// </summary>
+    /// <param name="html">Nội dung HTML của bài viết cần xóa ảnh.</param>
+    public static void DeleteContentImages(string html)
+    {
+        var paths = ExtractContentImagePaths(html);
+        foreach (var p in paths)
+            DeleteOld(p);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Xóa các ảnh có trong oldHtml nhưng không còn trong newHtml (ảnh bị loại bỏ khi sửa bài).
+    /// </summary>
+    public static void DeleteRemovedContentImages(string oldHtml, string newHtml)
+    {
+        var oldPaths = ExtractContentImagePaths(oldHtml);
+        var newPaths = new HashSet<string>(
+            ExtractContentImagePaths(newHtml),
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var p in oldPaths)
+        {
+            if (!newPaths.Contains(p))
+                DeleteOld(p);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────

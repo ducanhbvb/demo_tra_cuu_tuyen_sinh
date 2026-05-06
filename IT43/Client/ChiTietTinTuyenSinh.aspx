@@ -2,7 +2,7 @@
    CodeBehind="ChiTietTinTuyenSinh.aspx.cs" Inherits="ChiTietTinTuyenSinh" %>
 
 <asp:Content ContentPlaceHolderID="HeadContent" runat="server">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="<%: ResolveUrl("~/lib/chartjs/chart.umd.min.js") %>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
@@ -114,35 +114,53 @@
 
     <%-- RIGHT: Sidebar --%>
     <div class="col-lg-4">
-        <%-- Meta --%>
+        <%-- Meta Info Card --%>
         <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between text-muted small mb-2">
-                    <span><i class="bi bi-calendar me-1"></i>Ngày đăng: <asp:Literal ID="litNgayDang" runat="server" /></span>
-                    <span><i class="bi bi-eye me-1"></i><asp:Literal ID="litLuotXem" runat="server" /> lượt xem</span>
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center justify-content-between text-muted small mb-3">
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                        <span>Ngày đăng: <asp:Literal ID="litNgayDang" runat="server" /></span>
+                    </span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between text-muted small mb-3">
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-eye me-2 text-primary"></i>
+                        <span><asp:Literal ID="litLuotXem" runat="server" /> lượt xem</span>
+                    </span>
                 </div>
                 <a href='<%# "ChiTietTruong.aspx?slug=" + TruongSlug + "#tab-tuyensinh" %>'
-                   class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-arrow-left me-1"></i>Xem tất cả tin của trường
+                   class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Xem tất cả tin của trường</span>
                 </a>
             </div>
         </div>
 
         <%-- Tin cùng trường --%>
         <div class="card border-0 shadow-sm mb-3">
-            <div class="card-header bg-white fw-semibold border-bottom">
-                <i class="bi bi-list-ul me-1 text-primary"></i>Tin khác cùng trường
+            <div class="card-header bg-white fw-semibold border-bottom py-3">
+                <i class="bi bi-list-ul me-2 text-primary"></i>Tin khác cùng trường
             </div>
             <div class="card-body p-0">
                 <asp:Repeater ID="rptTinCungTruong" runat="server">
                     <HeaderTemplate><div class="list-group list-group-flush"></HeaderTemplate>
                     <ItemTemplate>
                         <a href='ChiTietTinTuyenSinh.aspx?id=<%# Eval("MaTin") %>'
-                           class="list-group-item list-group-item-action py-2 px-3 <%# Convert.ToInt32(Eval("MaTin")) == MaTinHienTai ? "active" : "" %>">
-                            <div class="fw-medium small"><%# Eval("TieuDeHienThi") %></div>
-                            <div class="d-flex justify-content-between text-muted" style="font-size:.75rem;">
-                                <span>Chỉ tiêu: <%# Eval("ChiTieu") ?? "N/A" %></span>
-                                <span><%# Eval("DiemChuanNamTruoc") != null ? string.Format("{0:F2} điểm", Eval("DiemChuanNamTruoc")) : "" %></span>
+                           class="list-group-item list-group-item-action py-3 px-3 border-0 border-bottom <%# SafeGetInt(Eval("MaTin")) == MaTinHienTai ? "active bg-primary text-white" : "" %>"
+                           style="<%# SafeGetInt(Eval("MaTin")) == MaTinHienTai ? "" : "border-bottom: 1px solid #f0f0f0 !important;" %>">
+                            <div class="d-flex flex-column gap-1">
+                                <div class="fw-semibold small lh-sm" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <%# Eval("TieuDeHienThi") %>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center" style="font-size: .8rem;">
+                                    <span class="<%# SafeGetInt(Eval("MaTin")) == MaTinHienTai ? "" : "text-muted" %>">
+                                        <i class="bi bi-people-fill me-1 opacity-75"></i>Chỉ tiêu:
+                                        <%# (Eval("ChiTieu") != DBNull.Value && Eval("ChiTieu") != null) ? FormatInt(Eval("ChiTieu")) : "N/A" %>
+                                    </span>
+                                    <%# (Eval("DiemChuanNamTruoc") != DBNull.Value && Eval("DiemChuanNamTruoc") != null) ?
+                                        "<span class='fw-semibold'>" + FormatDecimal(Eval("DiemChuanNamTruoc")) + " điểm</span>" : "" %>
+                                </div>
                             </div>
                         </a>
                     </ItemTemplate>

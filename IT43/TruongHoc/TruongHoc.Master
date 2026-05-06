@@ -1,0 +1,169 @@
+<%@ Master Language="C#" CodeBehind="TruongHoc.Master.cs" Inherits="MasterPages_TruongHoc" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%: Page.Title %> - Cổng Trường | Tra Cứu Tuyển Sinh</title>
+
+    <link rel="icon" type="image/x-icon" href="<%: ResolveUrl("~/favicon.ico") %>" />
+    <link rel="icon" type="image/png" sizes="32x32" href="<%: ResolveUrl("~/Resources/Icons/favicon-32x32.png") %>" />
+    <link rel="icon" type="image/png" sizes="16x16" href="<%: ResolveUrl("~/Resources/Icons/favicon-16x16.png") %>" />
+    <link rel="apple-touch-icon" sizes="180x180" href="<%: ResolveUrl("~/Resources/Icons/apple-touch-icon.png") %>" />
+
+    <%-- Local Google Fonts (Be Vietnam Pro) --%>
+    <link rel="stylesheet" href="<%: ResolveUrl("~/lib/fonts/be-vietnam-pro.css") %>" />
+    <%= AssetHelper.RenderBootstrapCss() %>
+    <%= AssetHelper.RenderBootstrapIconsCss() %>
+    <link rel="stylesheet" href="<%: ResolveUrl("~/Content/Admin.css?v=12") %>" />
+    <link rel="stylesheet" href="<%: ResolveUrl("~/Content/AdminModalPreview.css?v=1") %>" />
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+
+    <script>
+    (function(){try{var t=localStorage.getItem('tcts-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-bs-theme',t)}catch(e){}})();
+    </script>
+</head>
+<body class="admin-body">
+<form id="form1" runat="server">
+
+<div class="admin-layout">
+
+    <%-- ═══════════════ SIDEBAR ═══════════════ --%>
+    <aside class="admin-sidebar" id="adminSidebar">
+
+        <div class="sidebar-brand">
+            <div class="brand-icon" style="background:var(--bs-success)">
+                <i class="bi bi-building-fill"></i>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">Cổng Trường</div>
+                <div class="brand-sub"><asp:Literal ID="litTenTruong" runat="server" /></div>
+            </div>
+            <button class="sidebar-close-btn d-lg-none" type="button" id="sidebarCloseBtn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group">
+                <div class="nav-group-label">Tổng quan</div>
+                <a href="/TruongHoc/Default.aspx"
+                   class="nav-item <%: Page.AppRelativeVirtualPath.Contains("Default") ? "active" : "" %>">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-label">Nội dung trường</div>
+                <a href="/TruongHoc/QuanLyBaiViet.aspx"
+                   class="nav-item <%: Page.AppRelativeVirtualPath.Contains("QuanLyBaiViet") ? "active" : "" %>">
+                    <span class="nav-icon"><i class="bi bi-newspaper"></i></span>
+                    <span class="nav-text">Bài viết</span>
+                </a>
+                <a href="/TruongHoc/QuanLyTinTuyenSinh.aspx"
+                   class="nav-item <%: Page.AppRelativeVirtualPath.Contains("QuanLyTinTuyenSinh") ? "active" : "" %>">
+                    <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
+                    <span class="nav-text">Thông tin tuyển sinh</span>
+                </a>
+                <a href="/TruongHoc/GopYTuVan.aspx"
+                   class="nav-item <%: Page.AppRelativeVirtualPath.Contains("GopYTuVan") ? "active" : "" %>">
+                    <span class="nav-icon"><i class="bi bi-chat-dots-fill"></i></span>
+                    <span class="nav-text">Góp ý / Tư vấn</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-label">Tài khoản</div>
+                <a href="/Client/MyProfile.aspx"
+                   class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-circle"></i></span>
+                    <span class="nav-text">Hồ sơ cá nhân</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" style="background:var(--bs-success)">
+                    <i class="bi bi-building-fill"></i>
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-email"><asp:Literal ID="litEmail" runat="server" /></div>
+                    <div class="sidebar-user-role">Trường học</div>
+                </div>
+            </div>
+            <div class="sidebar-actions">
+                <a href="/Client/index.aspx" class="sidebar-action-btn" title="Về trang chủ">
+                    <i class="bi bi-house-door"></i>
+                </a>
+                <a href="/Client/Logout.aspx" class="sidebar-action-btn danger" title="Đăng xuất">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <%-- ═══════════════ MAIN AREA ═══════════════ --%>
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="topbar-toggle" type="button" id="sidebarToggleBtn">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="topbar-breadcrumb">
+                    <i class="bi bi-building me-2 text-muted" style="font-size:13px"></i>
+                    <span class="topbar-page-title"><%: Page.Title %></span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-clock" id="topbarClock"></div>
+                <div class="topbar-divider"></div>
+                <button class="topbar-icon-btn" type="button"
+                    title="Chuyển giao diện sáng/tối" onclick="toggleAdminTheme()">
+                    <i class="bi bi-moon-fill" id="adminThemeIcon"></i>
+                </button>
+                <a href="/Client/index.aspx" class="topbar-icon-btn" title="Xem trang web">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                <a href="/Client/Logout.aspx" class="topbar-icon-btn danger" title="Đăng xuất">
+                    <i class="bi bi-power"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="admin-content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </main>
+
+        <footer class="admin-footer">
+            <span>&copy; <%= DateTime.Now.Year %> Tra Cứu Tuyển Sinh &mdash; Cổng Trường</span>
+        </footer>
+    </div>
+</div>
+
+<%= AssetHelper.RenderBootstrapJs() %>
+<%-- Bundle: site.js + perf.js | admin-modal-preview.js + validation_data_input.js --%>
+<%: System.Web.Optimization.Scripts.Render("~/bundles/site") %>
+<%: System.Web.Optimization.Scripts.Render("~/bundles/admin") %>
+<script>
+    (function () {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAdmin);
+        } else {
+            initAdmin();
+        }
+    })();
+    function initAdmin() {
+        initAdminSidebar();
+        initAdminClock();
+        initStatCountUp();
+        syncAdminThemeIcon();
+    }
+</script>
+<asp:ContentPlaceHolder ID="ScriptContent" runat="server" />
+</form>
+</body>
+</html>

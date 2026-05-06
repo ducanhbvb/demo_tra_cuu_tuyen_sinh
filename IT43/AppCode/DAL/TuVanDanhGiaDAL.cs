@@ -47,6 +47,26 @@ public static class TuVanDanhGiaDAL
         return DBHelper.Val<int>(pID.Value);
     }
 
+    // ── Admin: chi tiết theo ID ───────────────────────────────────────────
+
+    /// <summary>
+    /// Lấy chi tiết 1 bản ghi tư vấn hoặc góp ý theo ID.
+    /// Trả về DataRow với các cột: HoTen, Email, TenTruong, NgayGui, TrangThai, NoiDung, GhiChuAdmin (chỉ TuVan).
+    /// </summary>
+    public static DataRow GetChiTiet(string loai, int id)
+    {
+        string sql = loai == "TUVAN"
+            ? @"SELECT tv.*, tr.TenTruong FROM tbl_TuVan tv
+                LEFT JOIN tbl_Truong tr ON tr.MaTruong = tv.MaTruong
+                WHERE tv.ID = @id"
+            : @"SELECT gy.*, tr.TenTruong FROM tbl_GopY gy
+                LEFT JOIN tbl_Truong tr ON tr.MaTruong = gy.MaTruong
+                WHERE gy.ID = @id";
+
+        var dt = DBHelper.Query(sql, new[] { new SqlParameter("@id", id) });
+        return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+    }
+
     // ── Admin: danh sách tư vấn / góp ý ──────────────────────────────────
     public static PagedTable GetDanhSach(string loai, byte? trangThai, int? maTruong, int pageIndex, int pageSize)
     {

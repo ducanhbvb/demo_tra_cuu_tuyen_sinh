@@ -63,7 +63,7 @@ public static class TimKiemTheoNganhDAL
             JOIN tbl_Truong              tr  ON tr.MaTruong      = t.MaTruong
             JOIN tbl_ChuyenNganh         cn  ON cn.MaChuyenNganh = t.MaChuyenNganh
             JOIN tbl_DanhMucNganh        dmn ON dmn.MaDanhMuc     = cn.MaDanhMuc
-            JOIN tbl_CapBac              cb  ON cb.MaCapBac       = (
+            LEFT JOIN tbl_CapBac         cb  ON cb.MaCapBac       = (
                 SELECT TOP 1 MaCapBac FROM tbl_TruongChuyenNganh
                 WHERE MaTruong=t.MaTruong AND MaChuyenNganh=t.MaChuyenNganh)
             JOIN tbl_PhuongThucXetTuyen  pt  ON pt.MaPhuongThuc   = t.MaPhuongThuc

@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 /// <summary>
 /// Trang Tìm kiếm theo ngành — cho phép lọc theo danh mục ngành, ngành cụ thể,
-/// năm tuyển sinh; hiển thị kết quả phân trang và hỗ trợ thêm trường vào danh sách so sánh.
+/// năm tuyển sinh; hiển thị kết quả phân trang và hỗ trợ:
+///   - Thêm trường vào Session["SoSanh"]   (nút SS trường)
+///   - Thêm ngành vào Session["SoSanhNganh"] (nút SS ngành — mới)
+/// Thông báo hiển thị qua Bootstrap Toast góc trên-phải (không còn litThongBao cuối trang).
 /// </summary>
 public partial class TimKiemTheoNganh_Page : Page
 {
     private const int PAGE_SIZE = 20;
 
-    /// <summary>Trang hiện tại (lưu ViewState).</summary>
     private int CurrentPage { get => ViewState["Page"] is int p ? p : 0; set => ViewState["Page"] = value; }
 
-    /// <summary>Khởi tạo trang: load bộ lọc và dữ liệu lần đầu.</summary>
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -26,47 +26,25 @@ public partial class TimKiemTheoNganh_Page : Page
         }
     }
 
-    /// <summary>Load danh mục ngành, ngành con và năm tuyển sinh vào DropDownList.</summary>
     private void LoadFilters()
     {
-        // Nhóm ngành
-        var dtDanhMuc = DBHelper.Query(
-            "SELECT MaDanhMuc, TenDanhMuc FROM tbl_DanhMucNganh ORDER BY ThuTu, TenDanhMuc");
-        foreach (DataRow r in dtDanhMuc.Rows)
-            ddlDanhMuc.Items.Add(new ListItem(r["TenDanhMuc"].ToString(), r["MaDanhMuc"].ToString()));
+        foreach (var dm in DanhMucBLL.GetDanhMucNganh())
+            ddlDanhMuc.Items.Add(new ListItem(dm.Ten, dm.Id.ToString()));
 
-        // Ngành
         LoadNganh(null);
 
-        // Năm tuyển sinh
-        var dtNam = DBHelper.Query(
-            "SELECT DISTINCT NamTuyenSinh FROM tbl_TinTuyenSinh ORDER BY NamTuyenSinh DESC");
-        foreach (DataRow r in dtNam.Rows)
-            ddlNam.Items.Add(new ListItem(r["NamTuyenSinh"].ToString(), r["NamTuyenSinh"].ToString()));
+        foreach (var y in DanhMucBLL.GetNamTuyenSinh())
+            ddlNam.Items.Add(new ListItem(y.ToString(), y.ToString()));
     }
 
-    /// <summary>Load danh sách ngành theo danh mục đã chọn (null = tất cả).</summary>
     private void LoadNganh(int? maDanhMuc)
     {
         ddlNganh.Items.Clear();
         ddlNganh.Items.Add(new ListItem("-- Tất cả ngành --", "0"));
-
-        string sql = maDanhMuc.HasValue
-            ? "SELECT MaChuyenNganh, TenChuyenNganh FROM tbl_ChuyenNganh WHERE MaDanhMuc=@dm ORDER BY TenChuyenNganh"
-            : "SELECT MaChuyenNganh, TenChuyenNganh FROM tbl_ChuyenNganh ORDER BY TenChuyenNganh";
-
-        var prms = maDanhMuc.HasValue
-            ? new[] { new SqlParameter("@dm", maDanhMuc.Value) }
-            : null;
-
-        var dt = DBHelper.Query(sql, prms);
-        foreach (DataRow r in dt.Rows)
-            ddlNganh.Items.Add(new ListItem(
-                r["TenChuyenNganh"].ToString(),
-                r["MaChuyenNganh"].ToString()));
+        foreach (var n in DanhMucBLL.GetChuyenNganh(maDanhMuc))
+            ddlNganh.Items.Add(new ListItem(n.Ten, n.Id.ToString()));
     }
 
-    /// <summary>Truy vấn dữ liệu tìm kiếm theo ngành, năm và bind vào GridView + phân trang.</summary>
     private void LoadData()
     {
         int? maNganh = null;
@@ -95,18 +73,38 @@ public partial class TimKiemTheoNganh_Page : Page
         BindPaging(paged.TongSo);
     }
 
-    /// <summary>Tạo danh sách nút phân trang dựa trên tổng số bản ghi.</summary>
     private void BindPaging(int tongSo)
     {
         int total = (int)Math.Ceiling((double)tongSo / PAGE_SIZE);
+        if (total <= 1) { rptPaging.DataSource = null; rptPaging.DataBind(); return; }
+
+        const int WING = 2;
         var pages = new List<object>();
-        for (int i = 0; i < total; i++)
-            pages.Add(new { PageIndex = i, PageText = (i + 1).ToString(), IsActive = i == CurrentPage });
+
+        Func<int, string, bool, bool, object> item =
+            (idx, text, active, disabled) =>
+                new { PageIndex = idx, PageText = text, IsActive = active, IsDisabled = disabled };
+
+        pages.Add(item(Math.Max(0, CurrentPage - 1), "‹", false, CurrentPage == 0));
+
+        int winStart = Math.Max(0, CurrentPage - WING);
+        int winEnd   = Math.Min(total - 1, CurrentPage + WING);
+
+        if (winStart > 1)  { pages.Add(item(0, "1", false, false)); pages.Add(item(-1, "…", false, true)); }
+        else if (winStart == 1) pages.Add(item(0, "1", false, false));
+
+        for (int i = winStart; i <= winEnd; i++)
+            pages.Add(item(i, (i + 1).ToString(), i == CurrentPage, false));
+
+        if (winEnd < total - 2)  { pages.Add(item(-1, "…", false, true)); pages.Add(item(total - 1, total.ToString(), false, false)); }
+        else if (winEnd == total - 2) pages.Add(item(total - 1, total.ToString(), false, false));
+
+        pages.Add(item(Math.Min(total - 1, CurrentPage + 1), "›", false, CurrentPage >= total - 1));
+
         rptPaging.DataSource = pages;
         rptPaging.DataBind();
     }
 
-    /// <summary>Khi thay đổi nhóm ngành → reload ngành con và dữ liệu.</summary>
     protected void ddlDanhMuc_Changed(object sender, EventArgs e)
     {
         int? maDanhMuc = null;
@@ -116,14 +114,12 @@ public partial class TimKiemTheoNganh_Page : Page
         LoadData();
     }
 
-    /// <summary>Xử lý nút Tìm kiếm — reset về trang đầu và tải lại dữ liệu.</summary>
     protected void btnTim_Click(object sender, EventArgs e)
     {
         CurrentPage = 0;
         LoadData();
     }
 
-    /// <summary>Xử lý chuyển trang qua Repeater phân trang.</summary>
     protected void rptPaging_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
         if (e.CommandName == "Page" && int.TryParse(e.CommandArgument?.ToString(), out int pg))
@@ -134,33 +130,49 @@ public partial class TimKiemTheoNganh_Page : Page
     }
 
     /// <summary>
-    /// Xử lý nút "Thêm so sánh" trên GridView — thêm MaTruong vào Session["SoSanh"]
-    /// (tối đa 3 trường).
+    /// Xử lý nút "+ So sánh" trên GridView:
+    ///   "ThemSoSanhNganh" — thêm MaTin vào Session["SoSanhNganh"] (tối đa 4)
+    /// Thông báo qua Bootstrap Toast.
     /// </summary>
     protected void gvKetQua_Command(object sender, CommandEventArgs e)
     {
-        if (e.CommandName == "ThemSoSanh" && int.TryParse(e.CommandArgument?.ToString(), out int maTruong))
-        {
-            if (!(Session["SoSanh"] is List<int> ds))
-                ds = new List<int>();
+        if (e.CommandName != "ThemSoSanhNganh") return;
 
-            if (!ds.Contains(maTruong) && ds.Count < 3)
-            {
-                ds.Add(maTruong);
-                Session["SoSanh"] = ds;
-                litThongBao.Text = $"<div class='alert alert-success alert-dismissible mt-2 py-1 small fade show'>" +
-                    $"Đã thêm vào danh sách so sánh ({ds.Count}/3). " +
-                    $"<a href='{ResolveUrl("~/Client/SoSanhTruong.aspx")}' class='alert-link'>Xem so sánh</a></div>";
-            }
-            else if (ds.Contains(maTruong))
-            {
-                litThongBao.Text = "<div class='alert alert-info mt-2 py-1 small'>Trường này đã có trong danh sách so sánh.</div>";
-            }
-            else
-            {
-                litThongBao.Text = "<div class='alert alert-warning mt-2 py-1 small'>Đã đủ 3 trường. <a href='" +
-                    ResolveUrl("~/Client/SoSanhTruong.aspx") + "' class='alert-link'>Xem so sánh</a></div>";
-            }
+        string soSanhNganhUrl = ResolveUrl("~/Client/SoSanhTruong.aspx?tab=nganh");
+
+        if (!int.TryParse(e.CommandArgument?.ToString(), out int maTin)) return;
+
+        if (!(Session["SoSanhNganh"] is List<int> ds)) ds = new List<int>();
+
+        if (ds.Contains(maTin))
+            ShowToast("Ngành này đã có trong danh sách so sánh.", "info");
+        else if (ds.Count >= 4)
+            ShowToast($"Đã đủ 4 ngành. <a href='{soSanhNganhUrl}' class='toast-link'>Xem so sánh ›</a>", "warning");
+        else
+        {
+            ds.Add(maTin);
+            Session["SoSanhNganh"] = ds;
+            ShowToast($"Đã thêm vào so sánh ({ds.Count}/4). <a href='{soSanhNganhUrl}' class='toast-link'>Xem so sánh ›</a>", "success");
         }
+
+        // Reload lại data để giữ kết quả tìm kiếm
+        LoadData();
+    }
+
+    /// <summary>Hiển thị Bootstrap Toast góc trên-phải qua RegisterStartupScript.</summary>
+    private void ShowToast(string htmlMessage, string type = "success")
+    {
+        string bgClass = $"text-bg-{type}";
+        string script  = $@"(function(){{
+            var el  = document.getElementById('toastSoSanh');
+            var msg = document.getElementById('toastSoSanhMsg');
+            if (!el || !msg) return;
+            el.className = 'toast align-items-center border-0 {bgClass}';
+            msg.innerHTML = {System.Web.HttpUtility.JavaScriptStringEncode(htmlMessage, addDoubleQuotes: true)};
+            bootstrap.Toast.getOrCreateInstance(el).show();
+        }})();";
+
+        Page.ClientScript.RegisterStartupScript(
+            GetType(), "toast_ss_" + DateTime.Now.Ticks, script, addScriptTags: true);
     }
 }

@@ -1,0 +1,272 @@
+/* Admin modal upload + preview components
+   Scope: QuanLyTruong, QuanLyBaiViet, QuanLyTinTuyenSinh
+   Purpose: keep preview/upload UI outside .aspx inline CSS. */
+
+.admin-image-upload {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    min-height: 124px;
+    padding: 12px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--bs-body-bg, #fff), var(--bs-tertiary-bg, #f8fafc));
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+.admin-image-upload:hover {
+    border-color: var(--accent, #4f46e5);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .08);
+}
+
+.admin-image-upload__preview {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    overflow: hidden;
+    border: 1px solid rgba(79, 70, 229, .16);
+    border-radius: 12px;
+    background: rgba(79, 70, 229, .08);
+}
+
+.admin-image-upload__thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.admin-image-upload__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 96px;
+    padding: 10px;
+    color: var(--text-muted, #64748b);
+    font-size: 12px;
+    text-align: center;
+}
+
+.admin-image-upload__placeholder i {
+    color: var(--accent, #4f46e5);
+    font-size: 24px;
+}
+
+.admin-image-upload__control { min-width: 0; }
+
+.admin-image-upload--avatar .admin-image-upload__preview {
+    width: 104px;
+    height: 104px;
+    min-height: 104px;
+    margin: auto;
+    border-radius: 16px;
+}
+
+.admin-image-upload--avatar .admin-image-upload__thumb { border-radius: 16px; }
+
+.admin-image-upload--cover,
+.admin-image-upload--article,
+.admin-image-upload--admission {
+    grid-template-columns: 190px minmax(0, 1fr);
+}
+
+.admin-image-upload--cover .admin-image-upload__preview,
+.admin-image-upload--article .admin-image-upload__preview,
+.admin-image-upload--admission .admin-image-upload__preview {
+    height: 118px;
+}
+
+.admin-image-upload--admission {
+    border-color: #bbf7d0;
+    background: linear-gradient(180deg, var(--bs-body-bg, #fff), rgba(240, 253, 244, .85));
+}
+
+.admin-image-upload--admission:hover {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, .08);
+}
+
+.admin-image-upload__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.admin-image-upload__clear {
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.admin-image-upload__filename {
+    max-width: 100%;
+    overflow: hidden;
+    color: #475569;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-preview-hero {
+    height: 180px;
+    overflow: hidden;
+    border: 1px solid rgba(79, 70, 229, .16);
+    border-radius: 16px;
+    background: rgba(79, 70, 229, .08);
+}
+
+.admin-preview-hero img,
+.admin-preview-cover-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-preview-logo {
+    width: 92px;
+    height: 92px;
+    border: 4px solid #fff;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
+    object-fit: cover;
+}
+
+.admin-preview-info-card,
+.admin-article-preview-content,
+.admin-admission-preview-card {
+    border: 1px solid var(--border-light, #e5e7eb);
+    border-radius: 16px;
+    background: var(--bs-body-bg, #fff);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+}
+
+.admin-preview-info-card { padding: 16px; }
+
+.admin-preview-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(79, 70, 229, .12);
+    color: var(--accent, #4f46e5);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-article-preview-cover {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.admin-article-preview-content { padding: 18px; }
+
+.admin-admission-preview-card {
+    overflow: hidden;
+    border-color: #bbf7d0;
+}
+
+.admin-admission-preview-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.admin-admission-preview-body { padding: 18px; }
+
+.admin-admission-preview-badge {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.admin-admission-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.admin-admission-preview-item {
+    padding: 10px;
+    border: 1px solid #dcfce7;
+    border-radius: 12px;
+    background: #f0fdf4;
+}
+
+.admin-admission-preview-item span {
+    display: block;
+    color: #15803d;
+    font-size: 12px;
+}
+
+.admin-admission-preview-item strong {
+    color: #052e16;
+    font-size: 15px;
+}
+
+.admission-deadline-field { max-width: 260px; }
+.admission-deadline-field .form-control[type="date"] {
+    position: relative;
+    width: 190px;
+    max-width: 100%;
+    min-height: 40px;
+    padding-right: 2.35rem;
+    line-height: 1.35;
+}
+.admission-deadline-field .form-control[type="date"]::-webkit-calendar-picker-indicator {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-right: .15rem;
+    opacity: .75;
+    cursor: pointer;
+}
+.admission-deadline-field .invalid-feedback,
+.admission-deadline-field .text-danger.small {
+    display: block;
+    margin-top: .42rem;
+    line-height: 1.35;
+}
+
+[data-bs-theme="dark"] .admin-image-upload {
+    border-color: rgba(148, 163, 184, .32);
+    background: linear-gradient(180deg, rgba(15, 23, 42, .95), rgba(30, 41, 59, .75));
+}
+[data-bs-theme="dark"] .admin-image-upload__preview { border-color: rgba(255,255,255,.08); }
+[data-bs-theme="dark"] .admin-image-upload__filename { color: #cbd5e1; }
+[data-bs-theme="dark"] .admin-preview-logo { border-color: #0f172a; background: #0f172a; }
+[data-bs-theme="dark"] .admin-admission-preview-item { background: rgba(22, 101, 52, .18); border-color: rgba(34,197,94,.22); }
+[data-bs-theme="dark"] .admin-admission-preview-item strong { color: #dcfce7; }
+[data-bs-theme="dark"] .admission-deadline-field .form-control[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+@media (max-width: 575.98px) {
+    .admin-image-upload,
+    .admin-image-upload--cover,
+    .admin-image-upload--article,
+    .admin-image-upload--admission { grid-template-columns: 1fr; }
+    .admin-image-upload--avatar .admin-image-upload__preview { width: 112px; height: 112px; }
+    .admin-image-upload--cover .admin-image-upload__preview,
+    .admin-image-upload--article .admin-image-upload__preview,
+    .admin-image-upload--admission .admin-image-upload__preview { height: 150px; }
+    .admin-preview-hero { height: 150px; }
+    .admin-admission-preview-grid { grid-template-columns: 1fr; }
+    .admission-deadline-field { max-width: none; }
+    .admission-deadline-field .form-control[type="date"] { width: 100%; }
+}

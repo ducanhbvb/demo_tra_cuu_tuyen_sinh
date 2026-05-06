@@ -7,11 +7,23 @@ using System.Web.UI;
 /// </summary>
 public partial class Account_Login : Page
 {
-    /// <summary>Nếu đã đăng nhập → redirect về trang chủ.</summary>
+    /// <summary>Nếu đã đăng nhập → redirect về ReturnUrl hoặc trang tương ứng role.</summary>
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (User.Identity.IsAuthenticated)
-            Response.Redirect("~/Client/index.aspx");
+        if (!User.Identity.IsAuthenticated) return;
+
+        // Đã đăng nhập → redirect về ReturnUrl an toàn hoặc trang theo role
+        string returnUrl = SecurityHelper.GetSafeReturnUrl(
+            Request.QueryString["ReturnUrl"] ?? Request.QueryString["returnUrl"]);
+        if (!string.IsNullOrEmpty(returnUrl))
+        {
+            Response.Redirect(returnUrl);
+            return;
+        }
+
+        // Không có ReturnUrl → redirect về trang chủ theo role
+        int maQuyen = SecurityHelper.GetCurrentMaQuyen();
+        Response.Redirect(SecurityHelper.GetRedirectUrlByRole(maQuyen));
     }
 
     /// <summary>
@@ -25,18 +37,33 @@ public partial class Account_Login : Page
         string email = txtEmail.Text.Trim().ToLower();
         string mk    = txtMatKhau.Text;
 
-        var (kq, maTK, role) = TaiKhoanBLL.DangNhap(email, mk);
+        var (kq, maTK, role, maTruong) = TaiKhoanBLL.DangNhap(email, mk);
 
         switch (kq)
         {
             case TaiKhoanBLL.KetQuaDangNhap.ThanhCong:
-                SecurityHelper.SignIn(maTK, email, role, chkNhoToi.Checked);
-                // Chỉ redirect URL nội bộ (bắt đầu bằng "/") — ngăn Open Redirect attack
-                string returnUrl = Request.QueryString["returnUrl"];
-                if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("/"))
+                SecurityHelper.SignIn(maTK, email, role, chkNhoToi.Checked, maTruong);
+
+                // Kiểm tra cờ yêu cầu đổi mật khẩu bắt buộc (admin tạo TK / reset MK)
+                if (TaiKhoanDAL.GetYeuCauDoiMatKhau(maTK))
+                {
+                    Response.Redirect("~/Client/DoiMatKhauBatBuoc.aspx");
+                    return;
+                }
+
+                // Chỉ redirect ReturnUrl nội bộ an toàn — ngăn Open Redirect attack
+                // FormsAuth gửi "ReturnUrl" (uppercase R), cần đọc cả 2 case
+                string returnUrl = SecurityHelper.GetSafeReturnUrl(
+                    Request.QueryString["ReturnUrl"] ?? Request.QueryString["returnUrl"]);
+                if (!string.IsNullOrEmpty(returnUrl))
                     Response.Redirect(returnUrl);
                 else
-                    Response.Redirect("~/Client/index.aspx");
+                {
+                    // Dùng biến role từ BLL (KHÔNG dùng GetCurrentMaQuyen — cookie chưa được gửi lại
+                    // trong cùng request nên FormsIdentity chưa khả dụng → luôn trả 0)
+                    int maQuyenLogin = SecurityHelper.RoleToMaQuyen(role);
+                    Response.Redirect(SecurityHelper.GetRedirectUrlByRole(maQuyenLogin));
+                }
                 break;
 
             case TaiKhoanBLL.KetQuaDangNhap.SaiMatKhau:

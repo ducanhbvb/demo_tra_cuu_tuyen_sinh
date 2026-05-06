@@ -6,8 +6,23 @@ using System.Data.SqlClient;
 /// <summary>Tiện ích kết nối SQL Server, dùng chung cho toàn bộ DAL.</summary>
 public static class DBHelper
 {
-    private static readonly string ConnStr =
-        ConfigurationManager.ConnectionStrings["TraCuuTuyenSinh"].ConnectionString;
+    private static readonly string ConnStr = ResolveConnectionString();
+
+    private static string ResolveConnectionString()
+    {
+        // Prefer the new key, then fall back to the legacy key.
+        var cs =
+            ConfigurationManager.ConnectionStrings["TraCuuTuyenSinh_V1"] ??
+            ConfigurationManager.ConnectionStrings["TraCuuTuyenSinh"];
+
+        if (cs == null || string.IsNullOrWhiteSpace(cs.ConnectionString))
+        {
+            throw new ConfigurationErrorsException(
+                "Missing connection string. Add 'TraCuuTuyenSinh_V1' or 'TraCuuTuyenSinh' in Web.config <connectionStrings>.");
+        }
+
+        return cs.ConnectionString;
+    }
 
     public static SqlConnection GetConnection() => new SqlConnection(ConnStr);
 

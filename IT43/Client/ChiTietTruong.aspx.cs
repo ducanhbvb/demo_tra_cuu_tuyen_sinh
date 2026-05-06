@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.UI;
 
 /// <summary>
@@ -32,6 +33,53 @@ public partial class ChiTietTruong : Page
 
         Page.Title = _truong.TenTruong;
 
+        // SEO: override meta description theo trường
+        string moTaClean = HtmlSanitizerHelper.ToPlainText(_truong.MoTa, 155);
+        string metaDesc = !string.IsNullOrWhiteSpace(moTaClean)
+            ? moTaClean
+            : $"Thông tin tuyển sinh, điểm chuẩn, ngành đào tạo của {_truong.TenTruong}. Tra cứu tuyển sinh đại học, cao đẳng Việt Nam.";
+        (Master as MasterPages_Site)?.SetMetaDescription(metaDesc);
+
+        // SEO: Open Graph + Twitter + Canonical
+        var master = Master as MasterPages_Site;
+        if (master != null)
+        {
+            string absoluteUrl = Request.Url.GetLeftPart(UriPartial.Path) + Request.Url.Query;
+            master.SetOgTitle(_truong.TenTruong + " - Tra Cứu Tuyển Sinh");
+            master.SetOgDescription(metaDesc);
+            master.SetOgUrl(absoluteUrl);
+            master.SetOgType("website");
+            string imageUrl = !string.IsNullOrEmpty(_truong.AnhDaiDien)
+                ? Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl(_truong.AnhDaiDien)
+                : Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Resources/Images/no-image.png");
+            master.SetOgImage(imageUrl);
+
+            master.SetTwTitle(_truong.TenTruong);
+            master.SetTwDescription(metaDesc);
+            master.SetTwImage(imageUrl);
+
+            master.SetCanonicalUrl(absoluteUrl);
+
+            // JSON-LD Structured Data: EducationalOrganization
+            string jsonLd = $@"
+{{
+  ""@context"": ""https://schema.org"",
+  ""@type"": ""EducationalOrganization"",
+  ""name"": ""{HttpUtility.JavaScriptStringEncode(_truong.TenTruong)}"",
+  ""description"": ""{HttpUtility.JavaScriptStringEncode(moTaClean)}"",
+  ""address"": {{
+    ""@type"": ""PostalAddress"",
+    ""addressLocality"": ""{HttpUtility.JavaScriptStringEncode(_truong.TinhThanh)}"",
+    ""streetAddress"": ""{HttpUtility.JavaScriptStringEncode(_truong.DiaChi)}""
+  }},
+  ""telephone"": ""{HttpUtility.JavaScriptStringEncode(_truong.SoDienThoai)}"",
+  ""url"": ""{absoluteUrl}"",
+  ""logo"": ""{Request.Url.GetLeftPart(UriPartial.Authority)}{ResolveUrl(!string.IsNullOrEmpty(_truong.AnhDaiDien) ? _truong.AnhDaiDien : "~/Resources/Images/no-image.png")}"",
+  ""sameAs"": []
+}}";
+            master.SetStructuredData(jsonLd);
+        }
+
         if (!IsPostBack) BindData();
     }
 
@@ -45,13 +93,18 @@ public partial class ChiTietTruong : Page
         ViewState["MaTruong"] = _truong.MaTruong;
 
         // Ảnh bìa / logo
-        imgBia.ImageUrl  = string.IsNullOrEmpty(_truong.AnhBia)       ? "~/Content/img/no-image.png" : _truong.AnhBia;
-        imgLogo.ImageUrl = string.IsNullOrEmpty(_truong.AnhDaiDien)    ? "~/Content/img/no-image.png" : _truong.AnhDaiDien;
+        imgBia.ImageUrl  = string.IsNullOrEmpty(_truong.AnhBia)    ? "~/Content/img/no-image.png" : _truong.AnhBia;
+        imgLogo.ImageUrl = string.IsNullOrEmpty(_truong.AnhDaiDien) ? "~/Content/img/no-image.png" : _truong.AnhDaiDien;
 
         litTenTruong.Text = Server.HtmlEncode(_truong.TenTruong);
         litDiaChi.Text    = Server.HtmlEncode(_truong.DiaChi ?? _truong.TinhThanh ?? "");
-        litMoTa.Text      = _truong.MoTa ?? "<p class='text-muted'>Chưa có thông tin mô tả.</p>";
+        litMoTa.Text      = string.IsNullOrWhiteSpace(_truong.MoTa)
+            ? "<p class='text-muted'>Chưa có thông tin mô tả.</p>"
+            : HtmlSanitizerHelper.SanitizeRichText(_truong.MoTa);
         litLoai.Text      = _truong.TenLoaiTruong;
+        litCapBacDaoTao.Text = string.IsNullOrEmpty(_truong.TenCapBacDaoTao)
+            ? "—"
+            : $"<span class='school-level-badge {GetCapBacCss(_truong.CapBacDaoTao)}'>{Server.HtmlEncode(_truong.TenCapBacDaoTao)}</span>";
         litVung.Text      = _truong.TenVung;
         litSdt.Text       = Server.HtmlEncode(_truong.SoDienThoai ?? "—");
         litKiemDinh.Text  = _truong.KiemDinhChatLuong
@@ -72,10 +125,6 @@ public partial class ChiTietTruong : Page
             ? $"<p class='mb-3'>Điểm đánh giá trung bình: <strong class='text-warning'>{_truong.DiemDanhGiaTB:F1}/5</strong> ({_truong.SoLuongDanhGia} đánh giá)</p>"
             : "<p class='text-muted mb-3'>Chưa có đánh giá nào.</p>";
 
-        // Ngành đào tạo
-        gvNganh.DataSource = TruongDAL.GetNganhCuaTruong(_truong.MaTruong);
-        gvNganh.DataBind();
-
         // Điểm chuẩn
         gvDiemChuan.DataSource = TinTuyenSinhDAL.GetTheoTruong(_truong.MaTruong);
         gvDiemChuan.DataBind();
@@ -92,9 +141,9 @@ public partial class ChiTietTruong : Page
             pnlNoTinTuyenSinh.Visible = true;
         }
 
-        // Bài viết của trường
-        var bvResult = BaiVietDAL.GetDanhSach(_truong.MaTruong, 0, 20, chiActive: true);
-        if (bvResult.Data.Rows.Count > 0)
+        // Bài viết của trường — dùng BaiVietBLL thay vì gọi DAL trực tiếp
+        var bvResult = BaiVietBLL.GetDanhSach(_truong.MaTruong, 0, 20, chiActive: true);
+        if (bvResult?.Data != null && bvResult.Data.Rows.Count > 0)
         {
             rptBaiVietTruong.DataSource = bvResult.Data;
             rptBaiVietTruong.DataBind();
@@ -104,27 +153,30 @@ public partial class ChiTietTruong : Page
             pnlNoBaiViet.Visible = true;
         }
 
-        // Đánh giá
-        rptDanhGia.DataSource = TuVanDanhGiaDAL.GetDanhGia(_truong.MaTruong, 1);
+        // Đánh giá — dùng TuVanDanhGiaBLL
+        rptDanhGia.DataSource = TuVanDanhGiaBLL.GetDanhGia(_truong.MaTruong, 1);
         rptDanhGia.DataBind();
 
         // Wishlist / đánh giá buttons
         if (User.Identity.IsAuthenticated)
         {
-            pnlWishlist.Visible  = true;
+            pnlWishlist.Visible    = true;
             pnlFormDanhGia.Visible = true;
             int maTK = SecurityHelper.GetCurrentMaTaiKhoan();
-            bool daThem = WishListDAL.DaThem(maTK, _truong.MaTruong, null);
-            btnWishList.Text     = daThem ? "❤ Bỏ yêu thích" : "♡ Thêm yêu thích";
+            bool daThem = WishListBLL.DaThem(maTK, _truong.MaTruong);
+            btnWishList.Text            = daThem ? "❤ Bỏ yêu thích" : "♡ Thêm yêu thích";
             btnWishList.CommandArgument = daThem ? "remove" : "add";
         }
     }
 
+    private string GetCapBacCss(byte? value)
+    {
+        return value == 1 ? "school-level-university" : value == 2 ? "school-level-college" : value == 3 ? "school-level-vocational" : "school-level-university";
+    }
+
     /// <summary>Lấy MaTruong an toàn từ ViewState (dùng cho mọi PostBack event).</summary>
     private int GetMaTruongFromViewState()
-    {
-        return ViewState["MaTruong"] is int id ? id : 0;
-    }
+        => ViewState["MaTruong"] is int id ? id : 0;
 
     /// <summary>Xử lý nút Thêm/Bỏ yêu thích — toggle wishlist cho người dùng hiện tại.</summary>
     protected void btnWishList_Click(object sender, EventArgs e)
@@ -135,14 +187,8 @@ public partial class ChiTietTruong : Page
         int maTruong = GetMaTruongFromViewState();
         if (maTruong == 0) return;
 
-        if (btnWishList.CommandArgument == "add")
-            WishListDAL.Them(maTK, maTruong, null);
-        else
-        {
-            var list = WishListDAL.GetByTaiKhoan(maTK);
-            foreach (var w in list)
-                if (w.MaTruong == maTruong) { WishListDAL.Xoa(w.ID, maTK); break; }
-        }
+        // WishListBLL.Toggle xử lý toàn bộ logic add/remove
+        WishListBLL.Toggle(maTK, maTruong);
         BindData();
     }
 
@@ -156,28 +202,30 @@ public partial class ChiTietTruong : Page
         if (maTruong == 0) return;
 
         if (byte.TryParse(ddlDiem.SelectedValue, out byte diem))
-            TuVanDanhGiaDAL.GuiDanhGia(maTruong, maTK, diem, txtDanhGia.Text.Trim());
+        {
+            var (ok, err) = TuVanDanhGiaBLL.GuiDanhGia(maTruong, maTK, diem, txtDanhGia.Text.Trim());
+            if (!ok)
+            {
+                // hiển thị lỗi nếu cần — tạm dùng litDiemTB để thông báo
+                litDiemTB.Text = $"<div class='alert alert-warning small'>{err}</div>";
+                return;
+            }
+        }
         BindData();
     }
 
     /// <summary>
-    /// Xử lý nút Gửi tư vấn — validate form, lưu câu hỏi tư vấn vào DB
+    /// Xử lý nút Gửi tư vấn — validate form qua BLL, lưu vào DB
     /// và hiển thị thông báo thành công.
     /// </summary>
     protected void btnGuiTuVan_Click(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(txtTVHoTen.Text) || string.IsNullOrWhiteSpace(txtTVEmail.Text)
-            || string.IsNullOrWhiteSpace(txtTVNoiDung.Text))
-        {
-            litTVThongBao.Text = "<div class='alert alert-warning mt-2 small'>Vui lòng điền đầy đủ họ tên, email và nội dung.</div>";
-            return;
-        }
-
         int maTruong = GetMaTruongFromViewState();
         if (maTruong == 0) return;
 
         int maTK = SecurityHelper.GetCurrentMaTaiKhoan();
-        TuVanDanhGiaDAL.GuiTuVan(new TuVanModel
+
+        var model = new TuVanModel
         {
             MaTaiKhoan  = maTK > 0 ? maTK : (int?)null,
             MaTruong    = maTruong,
@@ -185,8 +233,66 @@ public partial class ChiTietTruong : Page
             Email       = txtTVEmail.Text.Trim(),
             SoDienThoai = txtTVSdt.Text.Trim(),
             NoiDung     = txtTVNoiDung.Text.Trim()
-        });
+        };
+
+        var (ok, msg) = TuVanDanhGiaBLL.GuiTuVan(model);
+        if (!ok)
+        {
+            litTVThongBao.Text = $"<div class='alert alert-warning mt-2 small'>{msg}</div>";
+            return;
+        }
+
         litTVThongBao.Text = "<div class='alert alert-success mt-2 small'>Gửi thành công! Nhà trường sẽ liên hệ bạn sớm.</div>";
         txtTVHoTen.Text = txtTVEmail.Text = txtTVSdt.Text = txtTVNoiDung.Text = "";
+    }
+
+    // ── Data binding helpers (null-safe) ─────────────────────────────────────────
+    protected string FormatDate(object value)
+    {
+        return value != DBNull.Value && value != null
+            ? ((DateTime)value).ToString("dd/MM/yyyy")
+            : "";
+    }
+
+    protected string FormatBool(object value, string trueText = "✓", string falseText = "")
+    {
+        if (value == DBNull.Value || value == null) return "";
+        return (bool)value ? trueText : falseText;
+    }
+
+    protected string FormatStars(object rating)
+    {
+        if (rating == DBNull.Value || rating == null) return "";
+        byte r = (byte)rating;
+        return new string('★', r) + new string('☆', 5 - r);
+    }
+
+    protected string FormatDecimal(object value, string format = "F2")
+    {
+        return value != DBNull.Value && value != null
+            ? ((decimal)value).ToString(format)
+            : "";
+    }
+
+    protected string FormatInt(object value, string format = "N0")
+    {
+        return value != DBNull.Value && value != null
+            ? ((int)value).ToString(format)
+            : "";
+    }
+
+    protected string GetHanNopBadge(object hanNopValue)
+    {
+        if (hanNopValue == DBNull.Value || hanNopValue == null) return "";
+        DateTime hanNop = (DateTime)hanNopValue;
+        if (hanNop > DateTime.Now)
+        {
+            int days = (hanNop - DateTime.Now).Days;
+            return $"<span class='badge bg-success mb-2 p-2 px-3 fs-6 rounded-pill shadow-sm'><i class='bi bi-hourglass-split me-1'></i>Còn {days} ngày</span>";
+        }
+        else
+        {
+            return "<span class='badge bg-secondary mb-2 p-2 px-3 fs-6 rounded-pill'>Đã hết hạn</span>";
+        }
     }
 }

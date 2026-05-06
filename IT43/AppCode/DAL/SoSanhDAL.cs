@@ -65,6 +65,7 @@ public static class SoSanhDAL
                  FROM tbl_TruongChuyenNganh WHERE MaTruong=tr.MaTruong) AS SoNganh
             FROM tbl_Truong tr
             WHERE tr.MaTruong IN ({inClause})
+              AND tr.TrangThai = 1
             ORDER BY CHARINDEX(CAST(tr.MaTruong AS VARCHAR), @thuTu)
         ", new[] { new SqlParameter("@thuTu", string.Join(",", danhSachMaTruong)) });
 

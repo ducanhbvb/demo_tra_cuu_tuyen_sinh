@@ -2,7 +2,10 @@
    CodeBehind="TraCuuDiemChuan.aspx.cs" Inherits="TraCuuDiemChuan" %>
 
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
-<h3 class="fw-bold mb-4"><i class="bi bi-bar-chart-line text-primary me-2"></i>Tra cứu điểm chuẩn</h3>
+<div class="page-header-bar">
+    <h3 class="fw-bold mb-0"><i class="bi bi-bar-chart-line text-primary me-2"></i>Tra cứu điểm chuẩn</h3>
+    <p class="page-header-sub">Tra cứu điểm chuẩn tuyển sinh theo trường, ngành học và năm.</p>
+</div>
 
 <%-- BỘ LỌC --%>
 <div class="card border-0 shadow-sm mb-4">
@@ -57,24 +60,46 @@
     </span>
 </div>
 
+<asp:Panel ID="pnlEmpty" runat="server" Visible="false">
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-inbox display-4 d-block mb-2 opacity-50"></i>
+        <p class="mb-0">Không tìm thấy dữ liệu phù hợp với bộ lọc.</p>
+    </div>
+</asp:Panel>
+
+<asp:Panel ID="pnlResult" runat="server">
 <div class="table-responsive">
     <asp:GridView ID="gvKetQua" runat="server"
         CssClass="table table-hover table-bordered align-middle"
         AutoGenerateColumns="false" GridLines="None"
-        EmptyDataText="Không tìm thấy dữ liệu phù hợp với bộ lọc.">
+        EnableViewState="false"
+        EmptyDataText="">
         <Columns>
-            <asp:BoundField DataField="TenTruong"          HeaderText="Trường"          HtmlEncode="true" />
-            <asp:BoundField DataField="TinhThanh"          HeaderText="Tỉnh/TP"         HtmlEncode="true"
+            <asp:TemplateField HeaderText="Trường">
+                <ItemTemplate>
+                    <a href='<%# ResolveUrl("~/Client/ChiTietTruong.aspx?slug=" + Eval("TruongSlug")) %>'
+                       class="fw-semibold text-decoration-none"><%# Eval("TenTruong") %></a>
+                    <div class="small text-muted"><%# Eval("TinhThanh") %></div>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:BoundField DataField="TenChuyenNganh"     HeaderText="Ngành"       HtmlEncode="true" />
+            <asp:BoundField DataField="TenPhuongThuc"      HeaderText="Phương thức" HtmlEncode="true"
                 HeaderStyle-CssClass="col-hide-mobile" ItemStyle-CssClass="col-hide-mobile" />
-            <asp:BoundField DataField="TenChuyenNganh"     HeaderText="Ngành"           HtmlEncode="true" />
-            <asp:BoundField DataField="TenPhuongThuc"      HeaderText="Phương thức"     HtmlEncode="true"
+            <asp:BoundField DataField="ToHopMonHoc"        HeaderText="Tổ hợp"      HtmlEncode="true"
                 HeaderStyle-CssClass="col-hide-mobile" ItemStyle-CssClass="col-hide-mobile" />
-            <asp:BoundField DataField="ToHopMonHoc"        HeaderText="Tổ hợp"          HtmlEncode="true"
-                HeaderStyle-CssClass="col-hide-mobile" ItemStyle-CssClass="col-hide-mobile" />
-            <asp:BoundField DataField="NamTuyenSinh"       HeaderText="Năm"             />
-            <asp:BoundField DataField="DiemChuanNamTruoc"  HeaderText="Điểm chuẩn"
-                DataFormatString="{0:F2}" ItemStyle-CssClass="fw-bold text-danger" />
-            <asp:BoundField DataField="ChiTieu"            HeaderText="Chỉ tiêu"
+            <asp:TemplateField HeaderText="Năm">
+                <ItemTemplate>
+                    <span class="badge year-pill"><%# Eval("NamTuyenSinh") %></span>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Điểm chuẩn">
+                <ItemTemplate>
+                    <%# Eval("DiemChuanNamTruoc") == DBNull.Value
+                        ? "<span class='text-muted'>&#8212;</span>"
+                        : "<b class='text-danger'>" + string.Format("{0:F2}", Eval("DiemChuanNamTruoc")) + "</b>" %>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:BoundField DataField="ChiTieu" HeaderText="Chỉ tiêu"
                 HeaderStyle-CssClass="col-hide-mobile" ItemStyle-CssClass="col-hide-mobile" />
             <asp:HyperLinkField Text="Chi tiết" HeaderText=""
                 DataNavigateUrlFields="TruongSlug"
@@ -83,21 +108,24 @@
         </Columns>
     </asp:GridView>
 </div>
+</asp:Panel>
 
 <%-- PHÂN TRANG --%>
-<div class="d-flex justify-content-center mt-3">
-    <asp:Repeater ID="rptPaging" runat="server" OnItemCommand="rptPaging_ItemCommand">
-        <HeaderTemplate><ul class="pagination"></HeaderTemplate>
-        <ItemTemplate>
-            <li class='page-item <%# (bool)Eval("IsActive") ? "active" : "" %>'>
-                <asp:LinkButton runat="server" CssClass="page-link"
-                    CommandName="Page" CommandArgument='<%# Eval("PageIndex") %>'>
-                    <%# Eval("PageText") %>
-                </asp:LinkButton>
-            </li>
-        </ItemTemplate>
-        <FooterTemplate></ul></FooterTemplate>
-    </asp:Repeater>
-</div>
+<nav class="mt-3">
+    <ul class="pagination pagination-sm justify-content-center flex-wrap gap-1">
+        <asp:Repeater ID="rptPaging" runat="server" OnItemCommand="rptPaging_ItemCommand">
+            <ItemTemplate>
+                <li class='page-item <%# (bool)Eval("IsActive") ? "active" : (bool)Eval("IsDisabled") ? "disabled" : "" %>'>
+                    <%# (bool)Eval("IsDisabled")
+                        ? "<span class=\"page-link px-2\">" + Eval("PageText") + "</span>"
+                        : "<span style='display:none'></span>" %>
+                    <asp:LinkButton runat="server" CssClass="page-link px-2"
+                        Visible='<%# !(bool)Eval("IsDisabled") %>'
+                        CommandName="Page" CommandArgument='<%# Eval("PageIndex") %>'><%# Eval("PageText") %></asp:LinkButton>
+                </li>
+            </ItemTemplate>
+        </asp:Repeater>
+    </ul>
+</nav>
 
 </asp:Content>

@@ -47,13 +47,52 @@ public static class DanhMucDAL
         return MapList(dt);
     }
 
+    /// <summary>
+    /// Danh sách 34 tỉnh/TP dự kiến sau sáp nhập 2025.
+    /// Hardcoded để không phụ thuộc vào dữ liệu tbl_Truong có thể chưa cập nhật.
+    /// </summary>
     public static List<string> GetTinhThanh()
     {
-        var dt = DBHelper.Query("SELECT DISTINCT TinhThanh FROM tbl_Truong WHERE TinhThanh IS NOT NULL ORDER BY TinhThanh");
-        var list = new List<string>();
-        foreach (DataRow r in dt.Rows)
-            list.Add(r[0].ToString());
-        return list;
+        return new List<string>
+        {
+            // ── Miền Bắc ──────────────────────────────────────────────────────
+            "TP Hà Nội",
+            "Tỉnh Cao Bằng",
+            "Tỉnh Điện Biên",
+            "Tỉnh Hà Tĩnh",
+            "Tỉnh Hưng Yên",
+            "Tỉnh Lai Châu",
+            "Tỉnh Lạng Sơn",
+            "Tỉnh Lào Cai",
+            "Tỉnh Nghệ An",
+            "Tỉnh Ninh Bình",
+            "Tỉnh Phú Thọ",
+            "Tỉnh Quảng Ninh",
+            "Tỉnh Bắc Ninh",
+            "Tỉnh Sơn La",
+            "Tỉnh Thái Nguyên",
+            "Tỉnh Thanh Hoá",
+            "Tỉnh Tuyên Quang",
+            "TP Hải Phòng",
+            // ── Miền Trung ────────────────────────────────────────────────────
+            "TP Huế",
+            "TP Đà Nẵng",
+            "Tỉnh Đắk Lắk",
+            "Tỉnh Gia Lai",
+            "Tỉnh Khánh Hoà",
+            "Tỉnh Lâm Đồng",
+            "Tỉnh Quảng Ngãi",
+            "Tỉnh Quảng Trị",
+            // ── Miền Nam ──────────────────────────────────────────────────────
+            "TP Hồ Chí Minh",
+            "TP Cần Thơ",
+            "Tỉnh An Giang",
+            "Tỉnh Cà Mau",
+            "Tỉnh Đồng Nai",
+            "Tỉnh Đồng Tháp",
+            "Tỉnh Tây Ninh",
+            "Tỉnh Vĩnh Long",
+        };
     }
 
     public static List<int> GetNamTuyenSinh()

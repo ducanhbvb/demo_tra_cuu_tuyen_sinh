@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4F6D9E52-1A2B-4C3D-8E4F-5A6B7C8D9E0F}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>
+    </RootNamespace>
+    <AssemblyName>TraCuuTuyenSinh</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>latest</LangVersion>
+    <Use32BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Properties -->
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- Global -->
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <!-- AppCode - Helpers -->
+    <Compile Include="AppCode\Helpers\DBHelper.cs" />
+    <Compile Include="AppCode\Helpers\SecurityHelper.cs" />
+    <Compile Include="AppCode\Helpers\EmailHelper.cs" />
+    <Compile Include="AppCode\Helpers\SlugHelper.cs" />
+    <Compile Include="AppCode\Helpers\ImageUploadHelper.cs" />
+    <Compile Include="AppCode\Helpers\HtmlSanitizerHelper.cs" />
+    <Compile Include="AppCode\Helpers\CacheHelper.cs" />
+    <Compile Include="AppCode\Helpers\LogHelper.cs" />
+    <Compile Include="AppCode\Helpers\RelativeTime.cs" />
+    <Compile Include="AppCode\Helpers\AvatarHelper.cs" />
+    <!-- AppCode - Models -->
+    <Compile Include="AppCode\Models\TaiKhoanModel.cs" />
+    <Compile Include="AppCode\Models\TruongModel.cs" />
+    <Compile Include="AppCode\Models\TinTuyenSinhModel.cs" />
+    <Compile Include="AppCode\Models\DiemChuanLichSuModel.cs" />
+    <Compile Include="AppCode\Models\ProfileHocSinhModel.cs" />
+    <Compile Include="AppCode\Models\WishListModel.cs" />
+    <Compile Include="AppCode\Models\TuVanModel.cs" />
+    <Compile Include="AppCode\Models\DanhGiaModel.cs" />
+    <Compile Include="AppCode\Models\BaiVietModel.cs" />
+    <Compile Include="AppCode\Models\LookupModel.cs" />
+    <Compile Include="AppCode\Models\PagedResult.cs" />
+    <!-- AppCode - DAL -->
+    <Compile Include="AppCode\DAL\TaiKhoanDAL.cs" />
+    <Compile Include="AppCode\DAL\TruongDAL.cs" />
+    <Compile Include="AppCode\DAL\TinTuyenSinhDAL.cs" />
+    <Compile Include="AppCode\DAL\DiemChuanLichSuDAL.cs" />
+    <Compile Include="AppCode\DAL\ProfileDAL.cs" />
+    <Compile Include="AppCode\DAL\WishListDAL.cs" />
+    <Compile Include="AppCode\DAL\TuVanDanhGiaDAL.cs" />
+    <Compile Include="AppCode\DAL\BaiVietDAL.cs" />
+    <Compile Include="AppCode\DAL\DanhMucDAL.cs" />
+    <Compile Include="AppCode\DAL\ThongKeDAL.cs" />
+    <Compile Include="AppCode\DAL\SoSanhDAL.cs" />
+    <Compile Include="AppCode\DAL\TimKiemTheoNganhDAL.cs" />
+    <Compile Include="AppCode\DAL\GoiYTruongDAL.cs" />
+    <Compile Include="AppCode\DAL\LogsDAL.cs" />
+    <Compile Include="AppCode\DAL\ConfigDAL.cs" />
+    <Compile Include="AppCode\DAL\TuVanPhanHoiDAL.cs" />
+    <Compile Include="AppCode\DAL\HopThuDAL.cs" />
+    <!-- AppCode - BLL -->
+    <Compile Include="AppCode\BLL\TaiKhoanBLL.cs" />
+    <Compile Include="AppCode\BLL\TruongBLL.cs" />
+    <Compile Include="AppCode\BLL\TinTuyenSinhBLL.cs" />
+    <Compile Include="AppCode\BLL\ProfileBLL.cs" />
+    <Compile Include="AppCode\BLL\BaiVietBLL.cs" />
+    <Compile Include="AppCode\BLL\WishListBLL.cs" />
+    <Compile Include="AppCode\BLL\TuVanDanhGiaBLL.cs" />
+    <Compile Include="AppCode\BLL\SoSanhBLL.cs" />
+    <Compile Include="AppCode\BLL\DanhMucBLL.cs" />
+    <Compile Include="AppCode\BLL\DiemChuanLichSuBLL.cs" />
+    <Compile Include="AppCode\BLL\GoiYTruongBLL.cs" />
+    <Compile Include="AppCode\BLL\ThongKeBLL.cs" />
+    <Compile Include="AppCode\BLL\TimKiemTheoNganhBLL.cs" />
+    <Compile Include="AppCode\BLL\LogsBLL.cs" />
+    <Compile Include="AppCode\BLL\ConfigBLL.cs" />
+    <Compile Include="AppCode\BLL\HopThuBLL.cs" />
+    <!-- Client MasterPage -->
+    <Compile Include="Client\Site.Master.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Site.Master.designer.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <!-- Admin MasterPage -->
+    <Compile Include="Admin\Admin.Master.cs">
+      <DependentUpon>Admin.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Admin.Master.designer.cs">
+      <DependentUpon>Admin.Master</DependentUpon>
+    </Compile>
+    <!-- Client Pages -->
+    <Compile Include="Client\index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietTruong.aspx.cs">
+      <DependentUpon>ChiTietTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietTruong.aspx.designer.cs">
+      <DependentUpon>ChiTietTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietTinTuyenSinh.aspx.cs">
+      <DependentUpon>ChiTietTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>ChiTietTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TimKiemTruong.aspx.cs">
+      <DependentUpon>TimKiemTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TimKiemTruong.aspx.designer.cs">
+      <DependentUpon>TimKiemTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TraCuuDiemChuan.aspx.cs">
+      <DependentUpon>TraCuuDiemChuan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TraCuuDiemChuan.aspx.designer.cs">
+      <DependentUpon>TraCuuDiemChuan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\BaiViet.aspx.cs">
+      <DependentUpon>BaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\BaiViet.aspx.designer.cs">
+      <DependentUpon>BaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\ChiTietBaiViet.aspx.cs">
+      <DependentUpon>ChiTietBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\ChiTietBaiViet.aspx.designer.cs">
+      <DependentUpon>ChiTietBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\SoSanhTruong.aspx.cs">
+      <DependentUpon>SoSanhTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\SoSanhTruong.aspx.designer.cs">
+      <DependentUpon>SoSanhTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\TimKiemTheoNganh.aspx.cs">
+      <DependentUpon>TimKiemTheoNganh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\TimKiemTheoNganh.aspx.designer.cs">
+      <DependentUpon>TimKiemTheoNganh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\GoiYTruong.aspx.cs">
+      <DependentUpon>GoiYTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\GoiYTruong.aspx.designer.cs">
+      <DependentUpon>GoiYTruong.aspx</DependentUpon>
+    </Compile>
+    <!-- Client Account Pages -->
+    <Compile Include="Client\Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\DangKy.aspx.cs">
+      <DependentUpon>DangKy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DangKy.aspx.designer.cs">
+      <DependentUpon>DangKy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\QuenMatKhau.aspx.cs">
+      <DependentUpon>QuenMatKhau.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\QuenMatKhau.aspx.designer.cs">
+      <DependentUpon>QuenMatKhau.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\DatLaiMatKhau.aspx.cs">
+      <DependentUpon>DatLaiMatKhau.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DatLaiMatKhau.aspx.designer.cs">
+      <DependentUpon>DatLaiMatKhau.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\XacNhanEmail.aspx.cs">
+      <DependentUpon>XacNhanEmail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\XacNhanEmail.aspx.designer.cs">
+      <DependentUpon>XacNhanEmail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\Logout.aspx.designer.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+    </Compile>
+    <!-- Client DoiMatKhauBatBuoc -->
+    <Compile Include="Client\DoiMatKhauBatBuoc.aspx.cs">
+      <DependentUpon>DoiMatKhauBatBuoc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DoiMatKhauBatBuoc.aspx.designer.cs">
+      <DependentUpon>DoiMatKhauBatBuoc.aspx</DependentUpon>
+    </Compile>
+    <!-- Client Profile Pages -->
+    <Compile Include="Client\MyProfile.aspx.cs">
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\MyProfile.aspx.designer.cs">
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\HopThu.aspx.cs">
+      <DependentUpon>HopThu.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\HopThu.aspx.designer.cs">
+      <DependentUpon>HopThu.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\WishList.aspx.cs">
+      <DependentUpon>WishList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\WishList.aspx.designer.cs">
+      <DependentUpon>WishList.aspx</DependentUpon>
+    </Compile>
+    <!-- Admin Pages -->
+    <Compile Include="Admin\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTruong.aspx.cs">
+      <DependentUpon>QuanLyTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTruong.aspx.designer.cs">
+      <DependentUpon>QuanLyTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\ChinhSuaTruong.aspx.cs">
+      <DependentUpon>ChinhSuaTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ChinhSuaTruong.aspx.designer.cs">
+      <DependentUpon>ChinhSuaTruong.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTinTuyenSinh.aspx.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyGopYTuVan.aspx.cs">
+      <DependentUpon>QuanLyGopYTuVan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyGopYTuVan.aspx.designer.cs">
+      <DependentUpon>QuanLyGopYTuVan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyTaiKhoan.aspx.cs">
+      <DependentUpon>QuanLyTaiKhoan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyTaiKhoan.aspx.designer.cs">
+      <DependentUpon>QuanLyTaiKhoan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyBaiViet.aspx.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyBaiViet.aspx.designer.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\QuanLyLogs.aspx.cs">
+      <DependentUpon>QuanLyLogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\QuanLyLogs.aspx.designer.cs">
+      <DependentUpon>QuanLyLogs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\CaiDat.aspx.cs">
+      <DependentUpon>CaiDat.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\CaiDat.aspx.designer.cs">
+      <DependentUpon>CaiDat.aspx</DependentUpon>
+    </Compile>
+    <!-- TruongHoc MasterPage -->
+    <Compile Include="TruongHoc\TruongHoc.Master.cs">
+      <DependentUpon>TruongHoc.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\TruongHoc.Master.designer.cs">
+      <DependentUpon>TruongHoc.Master</DependentUpon>
+    </Compile>
+    <!-- TruongHoc Pages -->
+    <Compile Include="TruongHoc\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyBaiViet.aspx.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyBaiViet.aspx.designer.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyTinTuyenSinh.aspx.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\GopYTuVan.aspx.cs">
+      <DependentUpon>GopYTuVan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\GopYTuVan.aspx.designer.cs">
+      <DependentUpon>GopYTuVan.aspx</DependentUpon>
+    </Compile>
+    <!-- Handlers -->
+    <Compile Include="Handlers\DiemChuanChart.ashx.cs">
+      <DependentUpon>DiemChuanChart.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Handlers\HopThuCount.ashx.cs">
+      <DependentUpon>HopThuCount.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Handlers\UploadImage.ashx.cs">
+      <DependentUpon>UploadImage.ashx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Global -->
+    <Content Include="Database\acctest.txt" />
+    <Content Include="Database\fix_admin_password.sql" />
+    <Content Include="Database\insert.sql" />
+    <Content Include="Database\migrations\20260425_update_sp_Truong_TimKiem.sql" />
+    <Content Include="Database\Tracuutuyensinh.sql" />
+    <Content Include="Default.aspx" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="tools\publish\Admin\Admin.css" />
+    <Content Include="tools\publish\Admin\CaiDat.aspx" />
+    <Content Include="tools\publish\Admin\ChinhSuaTruong.aspx" />
+    <Content Include="tools\publish\Admin\Default.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyBaiViet.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyGopYTuVan.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyLogs.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyTaiKhoan.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyTinTuyenSinh.aspx" />
+    <Content Include="tools\publish\Admin\QuanLyTruong.aspx" />
+    <Content Include="tools\publish\bin\TraCuuTuyenSinh.dll" />
+    <Content Include="tools\publish\bin\TraCuuTuyenSinh.pdb" />
+    <Content Include="tools\publish\Client\BaiViet.aspx" />
+    <Content Include="tools\publish\Client\ChiTietBaiViet.aspx" />
+    <Content Include="tools\publish\Client\ChiTietTinTuyenSinh.aspx" />
+    <Content Include="tools\publish\Client\ChiTietTruong.aspx" />
+    <Content Include="tools\publish\Client\DangKy.aspx" />
+    <Content Include="tools\publish\Client\DatLaiMatKhau.aspx" />
+    <Content Include="tools\publish\Client\DoiMatKhauBatBuoc.aspx" />
+    <Content Include="tools\publish\Client\Error.aspx" />
+    <Content Include="tools\publish\Client\GoiYTruong.aspx" />
+    <Content Include="tools\publish\Client\HopThu.aspx" />
+    <Content Include="tools\publish\Client\index.aspx" />
+    <Content Include="tools\publish\Client\Login.aspx" />
+    <Content Include="tools\publish\Client\Logout.aspx" />
+    <Content Include="tools\publish\Client\MyProfile.aspx" />
+    <Content Include="tools\publish\Client\QuenMatKhau.aspx" />
+    <Content Include="tools\publish\Client\Site.css" />
+    <Content Include="tools\publish\Client\SoSanhTruong.aspx" />
+    <Content Include="tools\publish\Client\TimKiemTheoNganh.aspx" />
+    <Content Include="tools\publish\Client\TimKiemTruong.aspx" />
+    <Content Include="tools\publish\Client\TraCuuDiemChuan.aspx" />
+    <Content Include="tools\publish\Client\WishList.aspx" />
+    <Content Include="tools\publish\Client\XacNhanEmail.aspx" />
+    <Content Include="tools\publish\Content\Admin.css" />
+    <Content Include="tools\publish\Content\Client.css" />
+    <Content Include="tools\publish\Default.aspx" />
+    <Content Include="tools\publish\Global.asax" />
+    <Content Include="tools\publish\Resources\Icons\android-chrome-192x192.png" />
+    <Content Include="tools\publish\Resources\Icons\android-chrome-512x512.png" />
+    <Content Include="tools\publish\Resources\Icons\apple-touch-icon.png" />
+    <Content Include="tools\publish\Resources\Icons\favicon-16x16.png" />
+    <Content Include="tools\publish\Resources\Icons\favicon-32x32.png" />
+    <Content Include="tools\publish\Resources\Images\baiviet\bach-khoa-tphcm-nganh-moi-khoa-hoc-du-lieu-ai_thumb_ef7c3145.png" />
+    <Content Include="tools\publish\Resources\Images\baiviet\bi-quyet-chinh-phuc-nganh-y-da-khoa-ha-noi_thumb_15df6af6.jpg" />
+    <Content Include="tools\publish\Resources\Images\baiviet\diem-chuan-bach-khoa-ha-noi-2024_thumb_f8001b7a.png" />
+    <Content Include="tools\publish\Resources\Images\baiviet\fpt-university-hoc-phi-co-hoi-viec-lam_thumb_5647da9d.png" />
+    <Content Include="tools\publish\Resources\Images\baiviet\test-trang-chu_thumb_b3605871.jpg" />
+    <Content Include="tools\publish\Resources\Images\baiviet\top-5-nganh-cntt-diem-chuan-cao-2024_thumb_712439f2.jpg" />
+    <Content Include="tools\publish\Resources\Images\baiviet\xu-huong-tuyen-sinh-2024-nganh-hot_thumb_76065f48.jpg" />
+    <Content Include="tools\publish\Resources\Images\no-image.png" />
+    <Content Include="tools\publish\Resources\Images\truong\bach-khoa-ha-noi_cover_21c53afd.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\bach-khoa-ha-noi_logo_915060b2.png" />
+    <Content Include="tools\publish\Resources\Images\truong\bach-khoa-tphcm_cover_213b9dd1.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\bach-khoa-tphcm_logo_bd04788d.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-da-nang_cover_b9e3246d.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-da-nang_logo_ed73eafe.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-duy-tan_cover_c3c767a5.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-duy-tan_logo_5a26d10c.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-fpt_cover_103e9b69.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-fpt_logo_390e8e31.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-hue_cover_d1f75edc.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-hue_logo_67b62a5a.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-mo-ha-noi_cover_4b7c0e22.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-mo-ha-noi_logo_b6c3c742.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-ngoai-thuong_cover_4ddde878.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-ngoai-thuong_logo_0bc8741b.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-quoc-gia-ha-noi_cover_b3f251e0.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-quoc-gia-ha-noi_logo_44d48405.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-quoc-gia-thanh-pho-ho-chi-minh_logo_cccceeb5.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-su-pham-ha-noi_cover_37397c11.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-su-pham-ha-noi_logo_7bc5b85e.png" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-ton-duc-thang-tdtu_cover_0ce2c277.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-ton-duc-thang-tdtu_logo_e48e4330.png" />
+    <Content Include="tools\publish\Resources\Images\truong\hoc-vien-buu-chinh-vien-thong_cover_200214e3.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\hoc-vien-buu-chinh-vien-thong_logo_c4cdf484.png" />
+    <Content Include="tools\publish\Resources\Images\truong\kinh-te-quoc-dan_cover_d34b96e2.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\kinh-te-quoc-dan_logo_859d4d72.png" />
+    <Content Include="tools\publish\Resources\Images\truong\kinh-te-tphcm_cover_804a4506.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\kinh-te-tphcm_logo_6bd80ec1.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\rmit-viet-nam_cover_ccba53c8.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\rmit-viet-nam_logo_c672cc2f.png" />
+    <Content Include="tools\publish\Resources\Images\truong\y-duoc-tphcm_cover_95dbdb0f.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\y-duoc-tphcm_logo_3bd58830.png" />
+    <Content Include="tools\publish\Resources\Images\truong\y-ha-noi_cover_c5e5cad7.jpg" />
+    <Content Include="tools\publish\Resources\Images\truong\y-ha-noi_logo_677bf055.jpg" />
+    <Content Include="tools\publish\Scripts\perf.js" />
+    <Content Include="tools\publish\Scripts\site.js" />
+    <Content Include="tools\publish\Scripts\tinymce-init.js" />
+    <Content Include="tools\publish\Scripts\validation_data_input.js" />
+    <Content Include="tools\publish\TruongHoc\Default.aspx" />
+    <Content Include="tools\publish\TruongHoc\GopYTuVan.aspx" />
+    <Content Include="tools\publish\TruongHoc\QuanLyBaiViet.aspx" />
+    <Content Include="tools\publish\TruongHoc\QuanLyTinTuyenSinh.aspx" />
+    <!-- Config -->
+    <Content Include="Web.config" />
+    <Content Include="Admin\Web.config" />
+    <!-- Static assets -->
+    <Content Include="Client\Site.css" />
+    <Content Include="Admin\Admin.css" />
+    <Content Include="Content\Admin.css" />
+    <Content Include="Content\Client.css" />
+    <Content Include="Scripts\site.js" />
+    <!-- Client MasterPage -->
+    <Content Include="Client\Site.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Admin MasterPage -->
+    <Content Include="Admin\Admin.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client ASPX -->
+    <Content Include="Client\index.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\Error.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TimKiemTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TraCuuDiemChuan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\BaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\ChiTietBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\SoSanhTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\TimKiemTheoNganh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\GoiYTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client Account ASPX -->
+    <Content Include="Client\Login.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\DangKy.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\QuenMatKhau.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\DatLaiMatKhau.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\XacNhanEmail.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\Logout.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client Profile ASPX -->
+    <Content Include="Client\MyProfile.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\HopThu.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Client\WishList.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client DoiMatKhauBatBuoc -->
+    <Content Include="Client\DoiMatKhauBatBuoc.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Admin ASPX -->
+    <Content Include="Admin\Default.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\ChinhSuaTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyGopYTuVan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyTaiKhoan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\QuanLyLogs.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Admin\CaiDat.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- TruongHoc -->
+    <Content Include="TruongHoc\Web.config" />
+    <Content Include="TruongHoc\TruongHoc.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\Default.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\QuanLyBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\QuanLyTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\GopYTuVan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Handlers -->
+    <Content Include="Handlers\DiemChuanChart.ashx" />
+    <Content Include="Handlers\UploadImage.ashx" />
+  </ItemGroup>
+  <!-- Include all files from Resources folder (images, icons, fonts) -->
+  <ItemGroup>
+    <Content Include="Resources\**\*.*" />
+  </ItemGroup>
+  <!-- Include all JavaScript files from Scripts folder -->
+  <ItemGroup>
+    <Content Include="Scripts\**\*.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Database\danhsachTinh-TP.md" />
+    <Content Include="Database\TraCuuTuyenSinh.bak" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tools\build.bat" />
+    <Content Include="tools\fix_gitnexus.bat" />
+    <Content Include="tools\publish.bat" />
+    <Content Include="tools\publish\Admin\Admin.Master" />
+    <Content Include="tools\publish\Admin\Web.config" />
+    <Content Include="tools\publish\Client\Site.Master" />
+    <Content Include="tools\publish\Handlers\DiemChuanChart.ashx" />
+    <Content Include="tools\publish\Handlers\UploadImage.ashx" />
+    <Content Include="tools\publish\Resources\Images\truong\dai-hoc-quoc-gia-thanh-pho-ho-chi-minh_cover_0789b193.webp" />
+    <Content Include="tools\publish\TruongHoc\TruongHoc.Master" />
+    <Content Include="tools\publish\TruongHoc\Web.config" />
+    <Content Include="tools\publish\Web.config" />
+    <Content Include="tools\run_web.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != '' And Exists('$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' == '' And Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:63601/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

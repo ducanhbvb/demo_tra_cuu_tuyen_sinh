@@ -5,9 +5,21 @@
 
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
 
-<div class="mb-3">
-    <h4 class="mb-1"><i class="bi bi-diagram-3 me-2 text-primary"></i>Tìm trường theo ngành học</h4>
-    <p class="text-muted small mb-0">Chọn ngành học để xem tất cả các trường đào tạo và điểm chuẩn tương ứng.</p>
+<%-- Toast thông báo so sánh — góc trên-phải, tự tắt 4 giây --%>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9050;">
+    <div id="toastSoSanh" class="toast align-items-center border-0"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+        <div class="d-flex">
+            <div class="toast-body fw-semibold" id="toastSoSanhMsg"></div>
+            <button type="button" class="btn-close me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Đóng"></button>
+        </div>
+    </div>
+</div>
+
+<div class="page-header-bar">
+    <h4 class="mb-0"><i class="bi bi-diagram-3 me-2 text-primary"></i>Tìm trường theo ngành học</h4>
+    <p class="page-header-sub">Chọn ngành học để xem tất cả các trường đào tạo và điểm chuẩn tương ứng.</p>
 </div>
 
 <%-- BỘ LỌC --%>
@@ -73,9 +85,8 @@
         <asp:BoundField DataField="TenChuyenNganh" HeaderText="Ngành học" />
         <asp:BoundField DataField="TenCapBac"      HeaderText="Cấp bậc" />
         <asp:BoundField DataField="TenPhuongThuc"  HeaderText="Phương thức xét tuyển" />
-        <asp:BoundField DataField="TenPhuongThuc1"  HeaderText="Phương thức xét tuyển" />
         <asp:TemplateField HeaderText="Năm">
-            <ItemTemplate><span class="badge bg-secondary"><%# Eval("NamTuyenSinh") %></span></ItemTemplate>
+            <ItemTemplate><span class="badge year-pill"><%# Eval("NamTuyenSinh") %></span></ItemTemplate>
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Điểm chuẩn">
             <ItemTemplate>
@@ -86,9 +97,9 @@
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Học phí/năm">
             <ItemTemplate>
-                <%# Eval("HocPhi") == DBNull.Value
+                <%# Eval("HocPhi") == DBNull.Value || string.IsNullOrWhiteSpace(Eval("HocPhi").ToString())
                     ? "<span class='text-muted'>&#8212;</span>"
-                    : string.Format("{0:N0}", Eval("HocPhi")) + " đ" %>
+                    : System.Web.HttpUtility.HtmlEncode(Eval("HocPhi").ToString()) %>
             </ItemTemplate>
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Tổ hợp">
@@ -96,13 +107,14 @@
                 <span class="small text-muted"><%# Eval("ToHopMonHoc") %></span>
             </ItemTemplate>
         </asp:TemplateField>
+        <%-- Nút so sánh ngành --%>
         <asp:TemplateField HeaderText="So sánh">
             <ItemTemplate>
-                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary"
-                    CommandName="ThemSoSanh"
-                    CommandArgument='<%# Eval("MaTruong") %>'
+                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-primary"
+                    CommandName="ThemSoSanhNganh"
+                    CommandArgument='<%# Eval("MaTin") %>'
                     OnCommand="gvKetQua_Command"
-                    ToolTip="Thêm vào so sánh">
+                    ToolTip="Thêm ngành này vào so sánh">
                     <i class="bi bi-plus-circle"></i>
                 </asp:LinkButton>
             </ItemTemplate>
@@ -113,21 +125,21 @@
 </asp:Panel>
 
 <%-- PHÂN TRANG --%>
-<nav class="mt-2">
-    <ul class="pagination pagination-sm justify-content-center flex-wrap">
+<nav class="mt-3">
+    <ul class="pagination pagination-sm justify-content-center flex-wrap gap-1">
         <asp:Repeater ID="rptPaging" runat="server" OnItemCommand="rptPaging_ItemCommand">
             <ItemTemplate>
-                <li class='page-item <%# (bool)Eval("IsActive") ? "active" : "" %>'>
-                    <asp:LinkButton runat="server" CssClass="page-link"
-                        CommandName="Page" CommandArgument='<%# Eval("PageIndex") %>'>
-                        <%# Eval("PageText") %>
-                    </asp:LinkButton>
+                <li class='page-item <%# (bool)Eval("IsActive") ? "active" : (bool)Eval("IsDisabled") ? "disabled" : "" %>'>
+                    <%# (bool)Eval("IsDisabled")
+                        ? "<span class=\"page-link px-2\">" + Eval("PageText") + "</span>"
+                        : "<span style='display:none'></span>" %>
+                    <asp:LinkButton runat="server" CssClass="page-link px-2"
+                        Visible='<%# !(bool)Eval("IsDisabled") %>'
+                        CommandName="Page" CommandArgument='<%# Eval("PageIndex") %>'><%# Eval("PageText") %></asp:LinkButton>
                 </li>
             </ItemTemplate>
         </asp:Repeater>
     </ul>
 </nav>
-
-<asp:Literal ID="litThongBao" runat="server" />
 
 </asp:Content>

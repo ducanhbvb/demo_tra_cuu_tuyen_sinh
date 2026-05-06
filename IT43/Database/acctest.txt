@@ -1,7 +1,15 @@
-admin :   
+- admin :   
 admin@tracuutuyensinh.vn\
 Admin@123
 
-user : 
+- user : 
 test@test1.com	
-test@123
+Test@123
+
+- truonghoc : 
+truong01@test.com
+Test@321
+
+- mod
+mod@test.com
+Test@123

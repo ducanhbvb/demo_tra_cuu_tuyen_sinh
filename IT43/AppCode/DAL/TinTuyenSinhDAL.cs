@@ -95,6 +95,7 @@ public static class TinTuyenSinhDAL
 
     public static void Xoa(int maTin)
     {
+        // Hard delete đúng 1 record tin tuyển sinh theo MaTin, KHÔNG xóa toàn bộ bảng tbl_TinTuyenSinh.
         DBHelper.Execute("DELETE FROM tbl_TinTuyenSinh WHERE MaTin=@id",
             new[] { new SqlParameter("@id", maTin) });
     }
@@ -106,38 +107,65 @@ public static class TinTuyenSinhDAL
             new[] { new SqlParameter("@id", maTin) });
     }
 
+    /// <summary>Lấy tin theo ID cho Admin/TruongHoc — bao gồm cả tin đang ẩn.</summary>
     public static TinTuyenSinhModel GetById(int maTin)
+        => GetByIdInternal(maTin, onlyActive: false);
+
+    /// <summary>Lấy tin theo ID cho Client — chỉ trả tin đang hiển thị.</summary>
+    public static TinTuyenSinhModel GetByIdPublic(int maTin)
+        => GetByIdInternal(maTin, onlyActive: true);
+
+    private static TinTuyenSinhModel GetByIdInternal(int maTin, bool onlyActive)
     {
-        var dt = DBHelper.Query(@"
+        string sql = @"
             SELECT tts.*, tr.TenTruong, cn.TenChuyenNganh, pt.TenPhuongThuc
             FROM tbl_TinTuyenSinh tts
             JOIN tbl_Truong tr ON tr.MaTruong=tts.MaTruong
             JOIN tbl_ChuyenNganh cn ON cn.MaChuyenNganh=tts.MaChuyenNganh
             JOIN tbl_PhuongThucXetTuyen pt ON pt.MaPhuongThuc=tts.MaPhuongThuc
-            WHERE tts.MaTin=@id",
-            new[] { new SqlParameter("@id", maTin) });
+            WHERE tts.MaTin=@id";
+        if (onlyActive)
+            sql += " AND tts.TrangThai=1";
+
+        var dt = DBHelper.Query(sql, new[] { new SqlParameter("@id", maTin) });
         return dt.Rows.Count > 0 ? MapRow(dt.Rows[0]) : null;
     }
 
-    private static SqlParameter[] BuildParams(TinTuyenSinhModel m) => new[]
+    private static SqlParameter[] BuildParams(TinTuyenSinhModel m)
     {
-        new SqlParameter("@tr",    m.MaTruong),
-        new SqlParameter("@cn",    m.MaChuyenNganh),
-        new SqlParameter("@pt",    m.MaPhuongThuc),
-        new SqlParameter("@nam",   m.NamTuyenSinh),
-        new SqlParameter("@ct",    m.ChiTieu.HasValue    ? (object)m.ChiTieu.Value    : DBNull.Value),
-        new SqlParameter("@hp",    m.HocPhi.HasValue     ? (object)m.HocPhi.Value     : DBNull.Value),
-        new SqlParameter("@tohop", (object)m.ToHopMonHoc ?? DBNull.Value),
-        new SqlParameter("@dc1",   m.DiemChuanNamTruoc.HasValue ? (object)m.DiemChuanNamTruoc.Value : DBNull.Value),
-        new SqlParameter("@dc2",   m.DiemChuanNamNay.HasValue   ? (object)m.DiemChuanNamNay.Value   : DBNull.Value),
-        new SqlParameter("@cl",    m.ChenhLechDiem.HasValue      ? (object)m.ChenhLechDiem.Value     : DBNull.Value),
-        new SqlParameter("@loai",  (object)m.LoaiHinhDaoTao ?? DBNull.Value),
-        new SqlParameter("@cs",    (object)m.CoSoDaoTao ?? DBNull.Value),
-        new SqlParameter("@mo",    (object)m.MoTa ?? DBNull.Value),
-        new SqlParameter("@tieuDe",(object)m.TieuDe ?? DBNull.Value),
-        new SqlParameter("@hanNop", m.HanNop.HasValue ? (object)m.HanNop.Value : DBNull.Value),
-        new SqlParameter("@tt",    m.TrangThai)
-    };
+        // Helper tạo decimal param với precision/scale rõ ràng — tránh Arithmetic overflow
+        SqlParameter DecimalParam(string name, decimal? val, byte precision = 10, byte scale = 2)
+        {
+            var p = new SqlParameter(name, SqlDbType.Decimal)
+            {
+                Precision = precision,
+                Scale     = scale,
+                Value     = val.HasValue ? (object)val.Value : DBNull.Value
+            };
+            return p;
+        }
+
+        return new[]
+        {
+            new SqlParameter("@tr",    m.MaTruong),
+            new SqlParameter("@cn",    m.MaChuyenNganh),
+            new SqlParameter("@pt",    m.MaPhuongThuc),
+            new SqlParameter("@nam",   m.NamTuyenSinh),
+            new SqlParameter("@ct",    m.ChiTieu.HasValue ? (object)m.ChiTieu.Value : DBNull.Value),
+            // Sprint 1: HocPhi đổi thành NVARCHAR(100) — text tự do "10-20 triệu"
+            new SqlParameter("@hp", SqlDbType.NVarChar) { Size = 100, Value = (object)m.HocPhi ?? DBNull.Value },
+            new SqlParameter("@tohop", (object)m.ToHopMonHoc ?? DBNull.Value),
+            DecimalParam("@dc1", m.DiemChuanNamTruoc,    precision: 5,  scale: 2),
+            DecimalParam("@dc2", m.DiemChuanNamNay,      precision: 5,  scale: 2),
+            DecimalParam("@cl",  m.ChenhLechDiem,        precision: 5,  scale: 2),
+            new SqlParameter("@loai",  (object)m.LoaiHinhDaoTao ?? DBNull.Value),
+            new SqlParameter("@cs",    (object)m.CoSoDaoTao ?? DBNull.Value),
+            new SqlParameter("@mo",    (object)m.MoTa ?? DBNull.Value),
+            new SqlParameter("@tieuDe",(object)m.TieuDe ?? DBNull.Value),
+            new SqlParameter("@hanNop", m.HanNop.HasValue ? (object)m.HanNop.Value : DBNull.Value),
+            new SqlParameter("@tt",    m.TrangThai)
+        };
+    }
 
     private static TinTuyenSinhModel MapRow(DataRow r) => new TinTuyenSinhModel
     {
@@ -150,7 +178,7 @@ public static class TinTuyenSinhDAL
         TenPhuongThuc      = r.Table.Columns.Contains("TenPhuongThuc") ? r["TenPhuongThuc"].ToString() : "",
         NamTuyenSinh       = DBHelper.Val<short>(r["NamTuyenSinh"]),
         ChiTieu            = DBHelper.ValN<int>(r["ChiTieu"]),
-        HocPhi             = DBHelper.ValN<decimal>(r["HocPhi"]),
+        HocPhi             = r["HocPhi"] == DBNull.Value ? null : r["HocPhi"].ToString(),  // Sprint 1: NVARCHAR(100)
         ToHopMonHoc        = r["ToHopMonHoc"] == DBNull.Value ? null : r["ToHopMonHoc"].ToString(),
         DiemChuanNamTruoc  = DBHelper.ValN<decimal>(r["DiemChuanNamTruoc"]),
         DiemChuanNamNay    = DBHelper.ValN<decimal>(r["DiemChuanNamNay"]),

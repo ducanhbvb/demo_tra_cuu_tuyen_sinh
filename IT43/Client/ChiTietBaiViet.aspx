@@ -1,108 +1,92 @@
-﻿<%@ Page Title="Bài viết" Language="C#" MasterPageFile="~/Client/Site.Master"
+<%@ Page Title="Chi tiết bài viết" Language="C#" MasterPageFile="~/Client/Site.Master"
    CodeBehind="ChiTietBaiViet.aspx.cs" Inherits="ChiTietBaiViet_Page" %>
 
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    <%-- hero-banner, editorial-content, sidebar-card styles are in Content/Client.css --%>
+</asp:Content>
+
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
-
-<asp:Literal ID="litNotFound" runat="server" />
-
 <asp:Panel ID="pnlBaiViet" runat="server">
-<div class="row g-4">
-    <%-- NỘI DUNG CHÍNH --%>
-    <div class="col-lg-8">
-        <article>
-            <%-- Ảnh bìa --%>
-            <asp:Panel ID="pnlAnhBia" runat="server" CssClass="mb-4">
-                <asp:Image ID="imgAnhBia" runat="server"
-                    CssClass="w-100 rounded-3"
-                    style="max-height:400px;object-fit:cover;cursor:pointer;"
-                    onclick="if(this.src)window.open(this.src,'_blank')"
-                    title="Click để xem ảnh đầy đủ" />
-            </asp:Panel>
-
-            <%-- Meta --%>
-            <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
-                <span><i class="bi bi-calendar3 me-1"></i><asp:Literal ID="litNgayDang" runat="server" /></span>
-                <span><i class="bi bi-eye me-1"></i><asp:Literal ID="litLuotXem" runat="server" /> lượt xem</span>
-                <asp:Panel ID="pnlTruongBadge" runat="server">
-                    <span><i class="bi bi-building me-1"></i><asp:Literal ID="litTenTruong" runat="server" /></span>
-                </asp:Panel>
+    
+    <%-- HERO BANNER FULL WIDTH --%>
+    <div class="hero-banner" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%), url('<%= BannerUrl %>') center center / cover no-repeat;">
+        <div class="hero-content">
+            <span class="hero-badge" style="display:<%= string.IsNullOrEmpty(TheLoaiBadge) ? "none" : "inline-block" %>"><%= TheLoaiBadge %></span>
+            <h1 class="hero-title"><asp:Literal ID="litTieuDe" runat="server" /></h1>
+            
+            <div class="hero-meta">
+                <div class="article-author-signature">
+                    <img src="<%: ResolveUrl("~/Resources/Images/no-image.png") %>" alt="Author" width="32" height="32" />
+                    <span class="fw-medium"><asp:Literal ID="litNguoiDang" runat="server" /></span>
+                </div>
+                <span><i class="bi bi-calendar3 me-1"></i> <asp:Literal ID="litNgayDang" runat="server" /></span>
+                <span><i class="bi bi-eye me-1"></i> <asp:Literal ID="litLuotXem" runat="server" /> lượt đọc</span>
             </div>
-
-            <%-- Tiêu đề --%>
-            <h2 class="fw-bold mb-4"><asp:Literal ID="litTieuDe" runat="server" /></h2>
-
-            <%-- Nội dung --%>
-            <div class="article-content">
-                <asp:Literal ID="litNoiDung" runat="server" />
-            </div>
-        </article>
-
-        <%-- Bài viết liên quan --%>
-        <asp:Panel ID="pnlLienQuan" runat="server" CssClass="mt-5">
-            <h5 class="fw-bold mb-3 border-bottom pb-2">Bài viết liên quan</h5>
-            <asp:Repeater ID="rptLienQuan" runat="server">
-                <HeaderTemplate><div class="row g-3"></HeaderTemplate>
-                <ItemTemplate>
-                            <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <a href='ChiTietBaiViet.aspx?slug=<%# Eval("Slug") %>'>
-                                <img src='<%# string.IsNullOrEmpty(Eval("AnhChinh") as string) ? "/Resources/Images/no-image.png" : Eval("AnhChinh") %>'
-                                     class="card-img-top" style="height:120px;object-fit:cover;"
-                                     onerror="this.onerror=null;this.src='/Resources/Images/no-image.png'" />
-                            </a>
-                            <div class="card-body p-2">
-                                <small class="fw-semibold">
-                                    <a href='ChiTietBaiViet.aspx?slug=<%# Eval("Slug") %>'
-                                       class="text-body text-decoration-none"><%# Eval("TieuDe") %></a>
-                                </small>
-                                <div class="text-muted" style="font-size:.75rem;">
-                                    <%# ((DateTime)Eval("NgayDang")).ToString("dd/MM/yyyy") %>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </ItemTemplate>
-                <FooterTemplate></div></FooterTemplate>
-            </asp:Repeater>
-        </asp:Panel>
+        </div>
     </div>
 
-    <%-- SIDEBAR --%>
-    <div class="col-lg-4">
-        <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body">
-                <h6 class="fw-bold mb-3">Bài viết mới nhất</h6>
+    <%-- ARTICLE LAYOUT --%>
+    <div class="article-layout">
+        
+        <%-- MAIN CONTENT COLUMN --%>
+        <div class="article-main">
+            
+            <%-- Sticky Share Bar --%>
+            <div class="social-share-stick">
+                <a href="#" class="social-btn" title="Chia sẻ Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="social-btn" title="Chia sẻ Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" class="social-btn" title="Chia sẻ Zalo"><i class="bi bi-chat-fill"></i></a>
+                <a href="#" class="social-btn" title="Copy Link"><i class="bi bi-link-45deg"></i></a>
+            </div>
+
+            <%-- Editorial Body --%>
+            <div class="editorial-content">
+                <asp:Literal ID="litNoiDung" runat="server" />
+            </div>
+            
+            <hr class="my-5" />
+
+            <%-- Bottom Interaction Footer --%>
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div class="d-flex gap-2">
+                    <asp:Panel ID="pnlTruongBadge" runat="server" Visible="false">
+                        <span class="badge bg-secondary"><asp:Literal ID="litTenTruong" runat="server" /></span>
+                    </asp:Panel>
+                </div>
+            </div>
+
+        </div>
+
+        <%-- SIDEBAR COLUMN --%>
+        <div class="article-sidebar">
+            <asp:Panel ID="pnlLienQuan" runat="server" CssClass="sidebar-card">
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Đọc nhiều tuần này</h5>
                 <asp:Repeater ID="rptMoiNhat" runat="server">
                     <ItemTemplate>
-                        <div class="d-flex gap-2 mb-3 align-items-start">
-                            <img src='<%# string.IsNullOrEmpty(Eval("AnhChinh") as string) ? "/Resources/Images/no-image.png" : Eval("AnhChinh") %>'
-                                 style="width:60px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0;"
-                                 onerror="this.onerror=null;this.src='/Resources/Images/no-image.png'" />
-                            <div>
-                                <a href='ChiTietBaiViet.aspx?slug=<%# Eval("Slug") %>'
-                                   class="text-body text-decoration-none small fw-semibold lh-sm">
-                                    <%# Eval("TieuDe") %>
-                                </a>
-                                <div class="text-muted" style="font-size:.72rem;">
-                                    <%# ((DateTime)Eval("NgayDang")).ToString("dd/MM/yyyy") %>
-                                </div>
+                        <div class="related-item">
+                            <a href='/ChiTietBaiViet.aspx?slug=<%# Eval("Slug") %>'>
+                                <img src='<%# string.IsNullOrEmpty(Convert.ToString(Eval("AnhChinh"))) ? "/Resources/Images/no-image.png" : Eval("AnhChinh") %>' alt="News" loading="lazy" />
+                            </a>
+                            <div class="related-item-content">
+                                <h6><a href='/ChiTietBaiViet.aspx?slug=<%# Eval("Slug") %>'><%# Eval("TieuDe") %></a></h6>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i><%# FormatDate(Eval("NgayDang")) %></small>
                             </div>
                         </div>
                     </ItemTemplate>
                 </asp:Repeater>
+                
+                <a href="/BaiViet.aspx" class="btn btn-outline-primary w-100 mt-3 rounded-pill fw-medium">Xem tất cả tin tức</a>
+            </asp:Panel>
+
+            <div class="sidebar-card text-center" style="background: linear-gradient(135deg, var(--bs-primary), #6f42c1); color: white;">
+                <h5 class="fw-bold">Bạn đang chọn trường?</h5>
+                <p class="small opacity-75 mb-3">Sử dụng công cụ so sánh điểm chuẩn và gợi ý trường của chúng tôi.</p>
+                <a href="/TimKiemTruong.aspx" class="btn btn-light w-100 rounded-pill fw-bold text-primary">Tìm trường ngay</a>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-bold mb-2">Xem tất cả bài viết</h6>
-                <a href="/BaiViet.aspx" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-newspaper me-1"></i>Danh sách bài viết
-                </a>
-            </div>
-        </div>
     </div>
-</div>
 </asp:Panel>
 
+<asp:Literal ID="litNotFound" runat="server" />
 </asp:Content>

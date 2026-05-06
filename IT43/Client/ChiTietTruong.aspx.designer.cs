@@ -9,6 +9,7 @@ public partial class ChiTietTruong
     protected global::System.Web.UI.WebControls.Literal litDiaChi;
     protected global::System.Web.UI.WebControls.Literal litMoTa;
     protected global::System.Web.UI.WebControls.Literal litLoai;
+    protected global::System.Web.UI.WebControls.Literal litCapBacDaoTao;
     protected global::System.Web.UI.WebControls.Literal litVung;
     protected global::System.Web.UI.WebControls.Literal litSdt;
     protected global::System.Web.UI.WebControls.HyperLink hlkWeb;

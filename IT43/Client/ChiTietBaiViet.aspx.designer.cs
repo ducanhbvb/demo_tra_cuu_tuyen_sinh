@@ -6,8 +6,7 @@ public partial class ChiTietBaiViet_Page
 {
     protected global::System.Web.UI.WebControls.Literal litNotFound;
     protected global::System.Web.UI.WebControls.Panel pnlBaiViet;
-    protected global::System.Web.UI.WebControls.Panel pnlAnhBia;
-    protected global::System.Web.UI.WebControls.Image imgAnhBia;
+    protected global::System.Web.UI.WebControls.Literal litNguoiDang;
     protected global::System.Web.UI.WebControls.Literal litNgayDang;
     protected global::System.Web.UI.WebControls.Literal litLuotXem;
     protected global::System.Web.UI.WebControls.Panel pnlTruongBadge;

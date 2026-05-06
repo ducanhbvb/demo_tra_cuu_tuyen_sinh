@@ -22,6 +22,12 @@ public class Handlers_DiemChuanChart : IHttpHandler
             return;
         }
 
+        // Cache 10 phút — dữ liệu điểm chuẩn ít thay đổi
+        context.Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+        context.Response.Cache.SetExpires(DateTime.Now.AddMinutes(10));
+        context.Response.Cache.SetMaxAge(TimeSpan.FromMinutes(10));
+        context.Response.Cache.VaryByParams["maTruong"] = true;
+
         // Lấy dữ liệu điểm chuẩn theo năm, nhóm theo ngành
         var dt = DBHelper.Query(@"
             SELECT ls.NamTuyenSinh, cn.TenChuyenNganh, ISNULL(ls.DiemChuan, 0) AS DiemChuan

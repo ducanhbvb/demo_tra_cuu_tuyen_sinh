@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 
 /// <summary>
 /// Trang Chi tiết tin tuyển sinh — hiển thị thông tin ngành, phương thức,
@@ -33,7 +35,7 @@ public partial class ChiTietTinTuyenSinh : Page
             return;
         }
 
-        var tin = TinTuyenSinhDAL.GetById(id);
+        var tin = TinTuyenSinhDAL.GetByIdPublic(id);
         if (tin == null)
         {
             pnlNotFound.Visible = true;
@@ -56,6 +58,63 @@ public partial class ChiTietTinTuyenSinh : Page
 
         // Page title
         Page.Title = tin.TieuDeHienThi + " - Tra Cứu Tuyển Sinh";
+
+        // SEO: Open Graph + Twitter + Canonical + Article structured data
+        string moTaClean = HtmlSanitizerHelper.ToPlainText(tin.MoTa, 155);
+        string metaDesc = !string.IsNullOrWhiteSpace(moTaClean)
+            ? moTaClean
+            : $"{tin.TieuDeHienThi} - Thông tin tuyển sinh trường {tin.TenTruong}.";
+        var master = Master as MasterPages_Site;
+        if (master != null)
+        {
+            string absoluteUrl = Request.Url.GetLeftPart(UriPartial.Path) + Request.Url.Query;
+            master.SetOgTitle(tin.TieuDeHienThi + " - Tra Cứu Tuyển Sinh");
+            master.SetOgDescription(metaDesc);
+            master.SetOgUrl(absoluteUrl);
+            master.SetOgType("article");
+            string imageUrl = !string.IsNullOrEmpty(truong?.AnhDaiDien)
+                ? Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl(truong.AnhDaiDien)
+                : Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Resources/Images/no-image.png");
+            master.SetOgImage(imageUrl);
+            master.SetTwTitle(tin.TieuDeHienThi);
+            master.SetTwDescription(metaDesc);
+            master.SetTwImage(imageUrl);
+            master.SetCanonicalUrl(absoluteUrl);
+
+            // Additional article properties
+            var seoContent = Master.FindControl("SeoHeadContent") as System.Web.UI.WebControls.ContentPlaceHolder;
+            if (seoContent != null)
+            {
+                var pubMeta = new HtmlGenericControl("meta");
+                pubMeta.Attributes["property"] = "article:published_time";
+                pubMeta.Attributes["content"] = tin.NgayDang.ToString("yyyy-MM-ddTHH:mm:ssK");
+                seoContent.Controls.Add(pubMeta);
+            }
+
+            // JSON-LD: Article (admission notice)
+            string jsonLd = $@"
+{{
+  ""@context"": ""https://schema.org"",
+  ""@type"": ""Article"",
+  ""headline"": ""{HttpUtility.JavaScriptStringEncode(tin.TieuDeHienThi)}"",
+  ""image"": [""{imageUrl}""],
+  ""datePublished"": ""{tin.NgayDang.ToString("yyyy-MM-ddTHH:mm:ssK")}"",
+  ""author"": {{
+    ""@type"": ""Organization"",
+    ""name"": ""Tra Cứu Tuyển Sinh""
+  }},
+  ""publisher"": {{
+    ""@type"": ""Organization"",
+    ""name"": ""Tra Cứu Tuyển Sinh"",
+    ""logo"": {{
+      ""@type"": ""ImageObject"",
+      ""url"": ""{Request.Url.GetLeftPart(UriPartial.Authority)}/Resources/Images/logo-default.png""
+    }}
+  }},
+  ""description"": ""{HttpUtility.JavaScriptStringEncode(metaDesc)}""
+}}";
+            master.SetStructuredData(jsonLd);
+        }
 
         // Breadcrumb
         litBreadTruong.Text = Server.HtmlEncode(tin.TenTruong);
@@ -96,15 +155,16 @@ public partial class ChiTietTinTuyenSinh : Page
             litDiemNamNay.Text = tin.DiemChuanNamNay.Value.ToString("F2");
         }
 
-        litHocPhi.Text = tin.HocPhi.HasValue ? tin.HocPhi.Value.ToString("N0") + " VNĐ/năm" : "—";
+        // Sprint 1: HocPhi là string tự do, hiển thị trực tiếp (encode XSS)
+        litHocPhi.Text = string.IsNullOrWhiteSpace(tin.HocPhi) ? "—" : Server.HtmlEncode(tin.HocPhi);
         litLoaiHinh.Text = Server.HtmlEncode(tin.LoaiHinhDaoTao ?? "—");
         litCoSo.Text = Server.HtmlEncode(tin.CoSoDaoTao ?? "—");
 
-        // Mô tả
+        // Mô tả: render rich-text đã sanitize bằng whitelist để giữ định dạng nhưng tránh XSS lưu trữ.
         if (!string.IsNullOrWhiteSpace(tin.MoTa))
         {
             pnlMoTa.Visible = true;
-            litMoTa.Text = tin.MoTa;
+            litMoTa.Text = HtmlSanitizerHelper.SanitizeRichText(tin.MoTa);
         }
 
         // Meta
@@ -118,5 +178,25 @@ public partial class ChiTietTinTuyenSinh : Page
 
         // DataBind cho breadcrumb expressions
         pnlChiTiet.DataBind();
+    }
+
+    // ── Safe conversion helpers ─────────────────────────────────────────────
+    protected int SafeGetInt(object value)
+    {
+        return value != DBNull.Value && value != null ? Convert.ToInt32(value) : 0;
+    }
+
+    protected string FormatDecimal(object value, string format = "F2")
+    {
+        return value != DBNull.Value && value != null
+            ? ((decimal)value).ToString(format)
+            : "";
+    }
+
+    protected string FormatInt(object value, string format = "N0")
+    {
+        return value != DBNull.Value && value != null
+            ? ((int)value).ToString(format)
+            : "";
     }
 }

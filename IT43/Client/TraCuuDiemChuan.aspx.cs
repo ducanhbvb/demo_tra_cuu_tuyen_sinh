@@ -82,9 +82,47 @@ public partial class TraCuuDiemChuan : Page
         gvKetQua.DataSource = result.Data;
         gvKetQua.DataBind();
 
+        bool hasData = result.TongSo > 0;
+        pnlResult.Visible = hasData;
+        pnlEmpty.Visible  = !hasData;
+
+        int total = result.TongTrang;
         var pages = new List<object>();
-        for (int i = 0; i < result.TongTrang; i++)
-            pages.Add(new { PageIndex = i, PageText = (i + 1).ToString(), IsActive = i == CurrentPage });
+
+        if (total > 1)
+        {
+            const int WING = 2;
+            Func<int, string, bool, bool, object> item =
+                (idx, text, active, disabled) =>
+                    new { PageIndex = idx, PageText = text, IsActive = active, IsDisabled = disabled };
+
+            pages.Add(item(Math.Max(0, CurrentPage - 1), "‹", false, CurrentPage == 0));
+
+            int winStart = Math.Max(0, CurrentPage - WING);
+            int winEnd   = Math.Min(total - 1, CurrentPage + WING);
+
+            if (winStart > 1)
+            {
+                pages.Add(item(0, "1", false, false));
+                pages.Add(item(-1, "…", false, true));
+            }
+            else if (winStart == 1)
+                pages.Add(item(0, "1", false, false));
+
+            for (int i = winStart; i <= winEnd; i++)
+                pages.Add(item(i, (i + 1).ToString(), i == CurrentPage, false));
+
+            if (winEnd < total - 2)
+            {
+                pages.Add(item(-1, "…", false, true));
+                pages.Add(item(total - 1, total.ToString(), false, false));
+            }
+            else if (winEnd == total - 2)
+                pages.Add(item(total - 1, total.ToString(), false, false));
+
+            pages.Add(item(Math.Min(total - 1, CurrentPage + 1), "›", false, CurrentPage >= total - 1));
+        }
+
         rptPaging.DataSource = pages;
         rptPaging.DataBind();
     }

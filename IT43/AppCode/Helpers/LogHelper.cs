@@ -7,7 +7,8 @@ using System.Web;
 /// </summary>
 public static class LogHelper
 {
-    public static void Ghi(int? maTaiKhoan, string hanhDong, string moTa = null, bool isSuccess = true, string maLoi = null)
+    public static void Ghi(int? maTaiKhoan, string hanhDong, string moTa = null,
+        bool isSuccess = true, string maLoi = null, string bangTacDong = null)
     {
         try
         {
@@ -20,15 +21,16 @@ public static class LogHelper
 
             DBHelper.Execute(@"
                 INSERT INTO tbl_Logs
-                    (MaTaiKhoan, HanhDong, MoTa, IPAddress, UserAgent, TrangUrl,
+                    (MaTaiKhoan, HanhDong, BangTacDong, MoTa, IPAddress, UserAgent, TrangUrl,
                      SessionID, LoaiThietBi, IsSuccess, MaLoi)
                 VALUES
-                    (@maTK, @hd, @moTa, @ip, @ua, @url,
+                    (@maTK, @hd, @btd, @moTa, @ip, @ua, @url,
                      @sid, @ltd, @ok, @ml)",
                 new[]
                 {
                     new SqlParameter("@maTK", maTaiKhoan.HasValue ? (object)maTaiKhoan.Value : System.DBNull.Value),
                     new SqlParameter("@hd",   hanhDong),
+                    new SqlParameter("@btd",  (object)bangTacDong ?? System.DBNull.Value),
                     new SqlParameter("@moTa", (object)moTa    ?? System.DBNull.Value),
                     new SqlParameter("@ip",   (object)ip       ?? System.DBNull.Value),
                     new SqlParameter("@ua",   (object)userAgent ?? System.DBNull.Value),
