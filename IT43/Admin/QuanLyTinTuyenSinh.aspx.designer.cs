@@ -6,6 +6,9 @@ public partial class Admin_QuanLyTinTuyenSinh
     protected global::System.Web.UI.WebControls.DropDownList ddlNam;
     protected global::System.Web.UI.WebControls.Button btnLoc;
     protected global::System.Web.UI.WebControls.Literal litThongBao;
+    protected global::System.Web.UI.WebControls.Literal litTongTin;
+    protected global::System.Web.UI.WebControls.Literal litHienThi;
+    protected global::System.Web.UI.WebControls.Literal litLuotXem;
     protected global::System.Web.UI.WebControls.GridView gvTin;
     protected global::System.Web.UI.WebControls.Literal litTong;
     protected global::System.Web.UI.WebControls.Repeater rptPaging;

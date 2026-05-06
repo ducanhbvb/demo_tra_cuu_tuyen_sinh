@@ -1,6 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
+
+// Culture vi-VN: dấu phẩy (,) là thập phân, dấu chấm (.) là phân cách nghìn
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -21,9 +24,16 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
     /// <summary>Khởi tạo trang: load dropdown bộ lọc + modal và bind dữ liệu.</summary>
     protected void Page_Load(object sender, EventArgs e)
     {
+        gvTin.PreRender += gvTin_PreRender;
         if (!IsPostBack)
         {
             LoadDropdowns();
+            BindStats();
+            BindData();
+        }
+        else
+        {
+            // EnableViewState="false" → rebind để LinkButton trong GridView tồn tại trước RowCommand
             BindData();
         }
     }
@@ -32,24 +42,30 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
     private void LoadDropdowns()
     {
         // Filter
-        var truongs = DBHelper.Query("SELECT MaTruong, TenTruong FROM tbl_Truong ORDER BY TenTruong");
-        foreach (DataRow r in truongs.Rows)
-            ddlTruong.Items.Add(new ListItem(r["TenTruong"].ToString(), r["MaTruong"].ToString()));
+        var truongs = TruongBLL.GetDanhSachDropdown();
+        foreach (var t in truongs)
+            ddlTruong.Items.Add(new ListItem(t.Ten, t.Id.ToString()));
 
-        foreach (var n in DanhMucDAL.GetChuyenNganh())
+        foreach (var n in DanhMucBLL.GetChuyenNganh())
             ddlNganh.Items.Add(new ListItem(n.Ten, n.Id.ToString()));
 
-        foreach (var y in DanhMucDAL.GetNamTuyenSinh())
+        // Lấy danh sách năm từ DB + đảm bảo năm cài đặt của admin luôn có trong list
+        var years = DanhMucBLL.GetNamTuyenSinh();
+        int configNam = ConfigBLL.GetInt("NamTuyenSinhHienTai", 0);
+        if (configNam > 0 && !years.Contains(configNam))
+            years.Insert(0, configNam); // Thêm vào đầu nếu chưa có
+
+        foreach (var y in years)
             ddlNam.Items.Add(new ListItem(y.ToString(), y.ToString()));
 
         // Modal
-        foreach (DataRow r in truongs.Rows)
-            ddlMTruong.Items.Add(new ListItem(r["TenTruong"].ToString(), r["MaTruong"].ToString()));
+        foreach (var t in truongs)
+            ddlMTruong.Items.Add(new ListItem(t.Ten, t.Id.ToString()));
 
-        foreach (var n in DanhMucDAL.GetChuyenNganh())
+        foreach (var n in DanhMucBLL.GetChuyenNganh())
             ddlMNganh.Items.Add(new ListItem(n.Ten, n.Id.ToString()));
 
-        foreach (var pt in DanhMucDAL.GetPhuongThuc())
+        foreach (var pt in DanhMucBLL.GetPhuongThuc())
             ddlMPhuongThuc.Items.Add(new ListItem(pt.Ten, pt.Id.ToString()));
     }
 
@@ -59,20 +75,40 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
     /// <summary>
     /// Xử lý command trên GridView: XoaTin, ToggleTin (ẩn/hiện),
     /// SuaTin (load dữ liệu vào modal form).
+    /// TuVanVien chỉ được xem — không thể XoaTin, ToggleTin, SuaTin.
     /// </summary>
     protected void gvTin_RowCommand(object sender, GridViewCommandEventArgs e)
     {
+        // TuVanVien chỉ xem, chặn mọi write op
+        if (!SecurityHelper.CanManageContent())
+        {
+            litThongBao.Text = "<div class='alert alert-danger py-2'><i class='bi bi-shield-exclamation me-1'></i>Bạn không có quyền thực hiện thao tác này.</div>";
+            return;
+        }
+
         int maTin = int.Parse(e.CommandArgument.ToString());
 
         if (e.CommandName == "XoaTin")
         {
             TinTuyenSinhBLL.Xoa(maTin);
+
+            int adminId = SecurityHelper.GetCurrentMaTaiKhoan();
+            LogHelper.Ghi(adminId, "XOA_TIN_TUYEN_SINH",
+                $"Xóa tin tuyển sinh (MaTin={maTin})",
+                bangTacDong: "tbl_TinTuyenSinh");
+
             litThongBao.Text = "<div class='alert alert-success'>Đã xóa.</div>";
             BindData();
         }
         else if (e.CommandName == "ToggleTin")
         {
             TinTuyenSinhBLL.ToggleTrangThai(maTin);
+
+            int adminId = SecurityHelper.GetCurrentMaTaiKhoan();
+            LogHelper.Ghi(adminId, "TOGGLE_TIN_TUYEN_SINH",
+                $"Thay đổi trạng thái tin tuyển sinh (MaTin={maTin})",
+                bangTacDong: "tbl_TinTuyenSinh");
+
             litThongBao.Text = "<div class='alert alert-success'>Đã cập nhật trạng thái.</div>";
             BindData();
         }
@@ -89,12 +125,12 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
             txtMDiemTruoc.Text    = m.DiemChuanNamTruoc?.ToString("F2") ?? "";
             txtMDiemNay.Text      = m.DiemChuanNamNay?.ToString("F2") ?? "";
             txtMToHop.Text        = m.ToHopMonHoc ?? "";
-            txtMHocPhi.Text       = m.HocPhi?.ToString("F2") ?? "";
+            txtMHocPhi.Text       = m.HocPhi ?? "";  // Sprint 1: HocPhi là string
             txtMLoaiHinh.Text     = m.LoaiHinhDaoTao ?? "";
             txtMCoSo.Text         = m.CoSoDaoTao ?? "";
             txtMTieuDe.Text       = m.TieuDe ?? "";
             txtMHanNop.Text       = m.HanNop.HasValue ? m.HanNop.Value.ToString("yyyy-MM-dd") : "";
-            txtMMoTa.Text         = m.MoTa ?? "";
+            txtMMoTa.Text         = System.Web.HttpUtility.HtmlDecode(m.MoTa ?? "");
             chkMActive.Checked    = m.TrangThai;
             ShowModal = "true";
         }
@@ -103,10 +139,19 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
     /// <summary>
     /// Xử lý nút Lưu trong modal — thu thập dữ liệu form,
     /// gọi BLL Thêm hoặc Cập nhật tin tuyển sinh.
+    /// TuVanVien không được phép lưu.
     /// </summary>
     protected void btnLuuTin_Click(object sender, EventArgs e)
     {
+        if (!SecurityHelper.CanManageContent())
+        {
+            litThongBao.Text = "<div class='alert alert-danger py-2'><i class='bi bi-shield-exclamation me-1'></i>Bạn không có quyền thực hiện thao tác này.</div>";
+            return;
+        }
+
         int maTin = int.TryParse(hfMaTin.Value, out int i) ? i : 0;
+
+        // Tạo model từ form input
         var m = new TinTuyenSinhModel
         {
             MaTin             = maTin,
@@ -115,10 +160,10 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
             MaPhuongThuc      = int.TryParse(ddlMPhuongThuc.SelectedValue, out int pt) ? pt : 0,
             NamTuyenSinh      = short.TryParse(txtMNam.Text, out short nam) ? nam : (short)DateTime.Now.Year,
             ChiTieu           = int.TryParse(txtMChiTieu.Text, out int ct)   ? ct : (int?)null,
-            DiemChuanNamTruoc = decimal.TryParse(txtMDiemTruoc.Text, out decimal d1) ? d1 : (decimal?)null,
-            DiemChuanNamNay   = decimal.TryParse(txtMDiemNay.Text, out decimal d2)   ? d2 : (decimal?)null,
+            DiemChuanNamTruoc = decimal.TryParse(txtMDiemTruoc.Text, NumberStyles.Any, new CultureInfo("vi-VN"), out decimal d1) ? d1 : (decimal?)null,
+            DiemChuanNamNay   = decimal.TryParse(txtMDiemNay.Text,   NumberStyles.Any, new CultureInfo("vi-VN"), out decimal d2) ? d2 : (decimal?)null,
             ToHopMonHoc       = txtMToHop.Text.Trim(),
-            HocPhi            = decimal.TryParse(txtMHocPhi.Text, out decimal hp) ? hp : (decimal?)null,
+            HocPhi            = string.IsNullOrWhiteSpace(txtMHocPhi.Text) ? null : txtMHocPhi.Text.Trim(),
             LoaiHinhDaoTao    = txtMLoaiHinh.Text.Trim(),
             CoSoDaoTao        = txtMCoSo.Text.Trim(),
             TieuDe            = string.IsNullOrWhiteSpace(txtMTieuDe.Text) ? null : txtMTieuDe.Text.Trim(),
@@ -127,10 +172,28 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
             TrangThai         = chkMActive.Checked
         };
 
+        // Server-side validation: AllowPastDates check
+        bool allowPastDates = ConfigBLL.GetBool("AllowPastDates", false);
+        if (!allowPastDates && m.HanNop.HasValue && m.HanNop.Value.Date < DateTime.Today)
+        {
+            litThongBao.Text = "<div class='alert alert-danger'>Ngày hạn nộp không được trong quá khứ.</div>";
+            ShowModal = "true";
+            return;
+        }
+
         var (ok, error) = maTin > 0 ? TinTuyenSinhBLL.CapNhat(m) : TinTuyenSinhBLL.Them(m);
 
         if (ok)
         {
+            // Auto-sync điểm chuẩn năm nay vào bảng lịch sử
+            if (m.DiemChuanNamNay.HasValue)
+                DiemChuanLichSuBLL.SyncFromTinTuyenSinh(m.MaTruong);
+
+            int adminId = SecurityHelper.GetCurrentMaTaiKhoan();
+            LogHelper.Ghi(adminId, maTin > 0 ? "CAP_NHAT_TIN_TUYEN_SINH" : "THEM_TIN_TUYEN_SINH",
+                $"{(maTin > 0 ? "Cập nhật" : "Thêm")} tin tuyển sinh: Năm={m.NamTuyenSinh}, Trường={m.MaTruong}, Ngành={m.MaChuyenNganh}",
+                bangTacDong: "tbl_TinTuyenSinh");
+
             hfMaTin.Value = "";
             litThongBao.Text = "<div class='alert alert-success'>Lưu thành công!</div>";
             BindData();
@@ -146,6 +209,34 @@ public partial class Admin_QuanLyTinTuyenSinh : Page
     protected void rptPaging_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
         if (e.CommandName == "Page") { CurrentPage = int.Parse(e.CommandArgument.ToString()); BindData(); }
+    }
+
+    protected void gvTin_PreRender(object sender, EventArgs e)
+    {
+        if (gvTin.HeaderRow != null)
+            gvTin.HeaderRow.TableSection = TableRowSection.TableHeader;
+    }
+
+    protected bool SafeGetBool(object value)
+    {
+        return value != DBNull.Value && value != null && (bool)value;
+    }
+
+    protected string GetTrangThaiBadge(object value)
+    {
+        if (value == DBNull.Value || value == null) return "";
+        bool trangThai = (bool)value;
+        return trangThai
+            ? "<span class='badge badge-soft-success'><i class='bi bi-check-circle me-1'></i>Hiện</span>"
+            : "<span class='badge badge-soft-secondary'><i class='bi bi-eye-slash me-1'></i>Ẩn</span>";
+    }
+
+    private void BindStats()
+    {
+        var stats = ThongKeBLL.ThongKeTinTuyenSinh();
+        litTongTin.Text = stats.tong.ToString("N0");
+        litHienThi.Text = stats.hienThi.ToString("N0");
+        litLuotXem.Text = stats.luotXem.ToString("N0");
     }
 
     /// <summary>

@@ -24,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
+    <WebGreaseLibPath>packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,8 +43,19 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PrecompileBeforePublish>true</PrecompileBeforePublish>
+    <EnableUpdateable>false</EnableUpdateable>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.5.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -57,13 +69,23 @@
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- App_Start -->
+    <Compile Include="App_Start\BundleConfig.cs" />
     <!-- Global -->
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -74,7 +96,12 @@
     <Compile Include="AppCode\Helpers\EmailHelper.cs" />
     <Compile Include="AppCode\Helpers\SlugHelper.cs" />
     <Compile Include="AppCode\Helpers\ImageUploadHelper.cs" />
+    <Compile Include="AppCode\Helpers\HtmlSanitizerHelper.cs" />
+    <Compile Include="AppCode\Helpers\CacheHelper.cs" />
     <Compile Include="AppCode\Helpers\LogHelper.cs" />
+    <Compile Include="AppCode\Helpers\RelativeTime.cs" />
+    <Compile Include="AppCode\Helpers\AvatarHelper.cs" />
+    <Compile Include="AppCode\Helpers\AssetHelper.cs" />
     <!-- AppCode - Models -->
     <Compile Include="AppCode\Models\TaiKhoanModel.cs" />
     <Compile Include="AppCode\Models\TruongModel.cs" />
@@ -99,13 +126,31 @@
     <Compile Include="AppCode\DAL\DanhMucDAL.cs" />
     <Compile Include="AppCode\DAL\ThongKeDAL.cs" />
     <Compile Include="AppCode\DAL\SoSanhDAL.cs" />
+    <Compile Include="AppCode\DAL\SoSanhNganhDAL.cs" />
     <Compile Include="AppCode\DAL\TimKiemTheoNganhDAL.cs" />
     <Compile Include="AppCode\DAL\GoiYTruongDAL.cs" />
+    <Compile Include="AppCode\DAL\LogsDAL.cs" />
+    <Compile Include="AppCode\DAL\ConfigDAL.cs" />
+    <Compile Include="AppCode\DAL\TuVanPhanHoiDAL.cs" />
+    <Compile Include="AppCode\DAL\HopThuDAL.cs" />
     <!-- AppCode - BLL -->
     <Compile Include="AppCode\BLL\TaiKhoanBLL.cs" />
     <Compile Include="AppCode\BLL\TruongBLL.cs" />
     <Compile Include="AppCode\BLL\TinTuyenSinhBLL.cs" />
     <Compile Include="AppCode\BLL\ProfileBLL.cs" />
+    <Compile Include="AppCode\BLL\BaiVietBLL.cs" />
+    <Compile Include="AppCode\BLL\WishListBLL.cs" />
+    <Compile Include="AppCode\BLL\TuVanDanhGiaBLL.cs" />
+    <Compile Include="AppCode\BLL\SoSanhBLL.cs" />
+    <Compile Include="AppCode\BLL\SoSanhNganhBLL.cs" />
+    <Compile Include="AppCode\BLL\DanhMucBLL.cs" />
+    <Compile Include="AppCode\BLL\DiemChuanLichSuBLL.cs" />
+    <Compile Include="AppCode\BLL\GoiYTruongBLL.cs" />
+    <Compile Include="AppCode\BLL\ThongKeBLL.cs" />
+    <Compile Include="AppCode\BLL\TimKiemTheoNganhBLL.cs" />
+    <Compile Include="AppCode\BLL\LogsBLL.cs" />
+    <Compile Include="AppCode\BLL\ConfigBLL.cs" />
+    <Compile Include="AppCode\BLL\HopThuBLL.cs" />
     <!-- Client MasterPage -->
     <Compile Include="Client\Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -193,6 +238,13 @@
     <Compile Include="Client\TimKiemTheoNganh.aspx.designer.cs">
       <DependentUpon>TimKiemTheoNganh.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Client\GoiYTruong.aspx.cs">
+      <DependentUpon>GoiYTruong.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\GoiYTruong.aspx.designer.cs">
+      <DependentUpon>GoiYTruong.aspx</DependentUpon>
+    </Compile>
     <!-- Client Account Pages -->
     <Compile Include="Client\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
@@ -236,6 +288,14 @@
     <Compile Include="Client\Logout.aspx.designer.cs">
       <DependentUpon>Logout.aspx</DependentUpon>
     </Compile>
+    <!-- Client DoiMatKhauBatBuoc -->
+    <Compile Include="Client\DoiMatKhauBatBuoc.aspx.cs">
+      <DependentUpon>DoiMatKhauBatBuoc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\DoiMatKhauBatBuoc.aspx.designer.cs">
+      <DependentUpon>DoiMatKhauBatBuoc.aspx</DependentUpon>
+    </Compile>
     <!-- Client Profile Pages -->
     <Compile Include="Client\MyProfile.aspx.cs">
       <DependentUpon>MyProfile.aspx</DependentUpon>
@@ -243,6 +303,13 @@
     </Compile>
     <Compile Include="Client\MyProfile.aspx.designer.cs">
       <DependentUpon>MyProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Client\HopThu.aspx.cs">
+      <DependentUpon>HopThu.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Client\HopThu.aspx.designer.cs">
+      <DependentUpon>HopThu.aspx</DependentUpon>
     </Compile>
     <Compile Include="Client\WishList.aspx.cs">
       <DependentUpon>WishList.aspx</DependentUpon>
@@ -308,18 +375,66 @@
     <Compile Include="Admin\QuanLyLogs.aspx.designer.cs">
       <DependentUpon>QuanLyLogs.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\CaiDat.aspx.cs">
+      <DependentUpon>CaiDat.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\CaiDat.aspx.designer.cs">
+      <DependentUpon>CaiDat.aspx</DependentUpon>
+    </Compile>
+    <!-- TruongHoc MasterPage -->
+    <Compile Include="TruongHoc\TruongHoc.Master.cs">
+      <DependentUpon>TruongHoc.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\TruongHoc.Master.designer.cs">
+      <DependentUpon>TruongHoc.Master</DependentUpon>
+    </Compile>
+    <!-- TruongHoc Pages -->
+    <Compile Include="TruongHoc\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyBaiViet.aspx.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyBaiViet.aspx.designer.cs">
+      <DependentUpon>QuanLyBaiViet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyTinTuyenSinh.aspx.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\QuanLyTinTuyenSinh.aspx.designer.cs">
+      <DependentUpon>QuanLyTinTuyenSinh.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TruongHoc\GopYTuVan.aspx.cs">
+      <DependentUpon>GopYTuVan.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TruongHoc\GopYTuVan.aspx.designer.cs">
+      <DependentUpon>GopYTuVan.aspx</DependentUpon>
+    </Compile>
     <!-- Handlers -->
     <Compile Include="Handlers\DiemChuanChart.ashx.cs">
       <DependentUpon>DiemChuanChart.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\HopThuCount.ashx.cs">
+      <DependentUpon>HopThuCount.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Handlers\UploadImage.ashx.cs">
+      <DependentUpon>UploadImage.ashx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <!-- Global -->
-    <Content Include="Database\Tracuutuyensinh_sql2014.sql" />
-    <Content Include="docs\Database\Tracuutuyensinh.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Database\acctest.txt" />
     <Content Include="Default.aspx" />
+    <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <!-- Config -->
     <Content Include="Web.config" />
@@ -328,8 +443,13 @@
     <Content Include="Client\Site.css" />
     <Content Include="Admin\Admin.css" />
     <Content Include="Content\Admin.css" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\AdminModalPreview.css" />
+    <Content Include="Content\Client.css" />
+    <Content Include="Content\HomePage.css" />
+    <Content Include="Content\HopThu.css" />
     <Content Include="Scripts\site.js" />
+    <Content Include="Scripts\admin-modal-preview.js" />
+    <Content Include="Scripts\homepage-client.js" />
     <!-- Client MasterPage -->
     <Content Include="Client\Site.Master">
       <SubType>ASPXCodeBehind</SubType>
@@ -369,6 +489,9 @@
     <Content Include="Client\TimKiemTheoNganh.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Client\GoiYTruong.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <!-- Client Account ASPX -->
     <Content Include="Client\Login.aspx">
       <SubType>ASPXCodeBehind</SubType>
@@ -392,7 +515,14 @@
     <Content Include="Client\MyProfile.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Client\HopThu.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Client\WishList.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- Client DoiMatKhauBatBuoc -->
+    <Content Include="Client\DoiMatKhauBatBuoc.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <!-- Admin ASPX -->
@@ -420,8 +550,61 @@
     <Content Include="Admin\QuanLyLogs.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Admin\CaiDat.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <!-- TruongHoc -->
+    <Content Include="TruongHoc\Web.config" />
+    <Content Include="TruongHoc\TruongHoc.Master">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\Default.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\QuanLyBaiViet.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\QuanLyTinTuyenSinh.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="TruongHoc\GopYTuVan.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <!-- Handlers -->
     <Content Include="Handlers\DiemChuanChart.ashx" />
+    <Content Include="Handlers\UploadImage.ashx" />
+  </ItemGroup>
+  <!-- Include all files from Resources folder (images, icons, fonts) -->
+  <ItemGroup>
+    <Content Include="Resources\**\*.*" />
+  </ItemGroup>
+  <!-- Include all JavaScript files from Scripts folder -->
+  <ItemGroup>
+    <Content Include="Scripts\**\*.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Database\danhsachTinh-TP.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tools\build.bat" />
+    <Content Include="tools\fix_gitnexus.bat" />
+    <Content Include="tools\run_web.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <!-- Include all files from lib folder (bootstrap, etc.) -->
+  <ItemGroup>
+    <Content Include="lib\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Handlers\HopThuCount.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tools\warmup.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tools\compress-images.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != '' And Exists('$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets')" />
